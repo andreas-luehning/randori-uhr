@@ -172,9 +172,9 @@ body.phase-swap .main span { color: var(--swap-bg); }
 body.phase-prep .main span { color: var(--bg); }
 body.phase-done .main span { color: var(--done-bg); }
 body.phase-wait .main { background: var(--los-bg); min-width: 240px; }
-#btnStop { position: relative; overflow: hidden; touch-action: none; -webkit-touch-callout: none; }
+#btnStop { position: relative; touch-action: none; -webkit-touch-callout: none; }
 #btnStop::before {
-  content: ""; position: absolute; inset: 0; background: currentColor; opacity: 0.35;
+  content: ""; position: absolute; inset: 0; border-radius: inherit; background: currentColor; opacity: 0.35;
   transform: scaleX(0); transform-origin: left;
 }
 #btnStop.holding::before { transform: scaleX(1); transition: transform 1s linear; }
