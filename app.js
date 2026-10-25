@@ -1,22 +1,22 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '11';
+const APP_VERSION = '12';
 
 /* ================= Vorlagen & Speicher ================= */
 
+// Namensschema wie im Training üblich: Randori 3 × 3 = 3 Runden à 3 Min,
+// Kakari 2 × 2 = 2 Min pro Partner, aufgeteilt auf 2 Angriffe
 const BUILTIN = [
-  { id: 'randori53', name: 'Randori 5 × 3:00', mode: 'randori', rounds: 5, work: 180, transition: 'wait', pause: 30 },
   { id: 'randori33', name: 'Randori 3 × 3', mode: 'randori', rounds: 3, work: 180, transition: 'pausewait', pause: 30 },
   { id: 'kakari22', name: 'Kakari 2 × 2', mode: 'kakari', partners: 4, perPartner: 120, swapEvery: 60, swapPause: 5, transition: 'wait', pause: 30 },
-  { id: 'kakari42', name: 'Kakari 4 × 2', mode: 'kakari', partners: 4, perPartner: 240, swapEvery: 120, swapPause: 5, transition: 'wait', pause: 30 },
-  { id: 'zirkel4020', name: 'Zirkel 40 / 20 × 10', mode: 'zirkel', rounds: 10, work: 40, rest: 20 },
 ];
 
+// Startwerte beim Wechsel des Modus (Zirkel hat keine eigene Vorlage)
 const MODE_DEFAULTS = {
   randori: BUILTIN[0],
-  kakari: BUILTIN[2],
-  zirkel: BUILTIN[4],
+  kakari: BUILTIN[1],
+  zirkel: { id: null, mode: 'zirkel', rounds: 10, work: 40, rest: 20 },
 };
 
 const DEFAULT_SETTINGS = { volume: 0.9, warn: 10, lead: 5, media: false, theme: 'klassisch' };
@@ -49,15 +49,26 @@ function fmt(sec) {
   return m + ':' + String(s).padStart(2, '0');
 }
 
+// Minuten kurz: 180 -> "3", 90 -> "1:30"
+function mins(sec) { return sec % 60 === 0 ? String(sec / 60) : fmt(sec); }
+
+// Vorschlag für den Namen einer neuen Vorlage, im Schema „Randori 3 × 3“
+function shortName(c) {
+  if (c.mode === 'randori') return 'Randori ' + c.rounds + ' × ' + mins(c.work);
+  if (c.mode === 'kakari') return 'Kakari ' + mins(c.perPartner) + ' × ' + Math.ceil(c.perPartner / c.swapEvery);
+  return 'Zirkel ' + c.work + '/' + c.rest + ' × ' + c.rounds;
+}
+
+// Erklärung unter dem Vorlagennamen
 function describe(c) {
-  if (c.mode === 'randori') return c.rounds + ' × ' + fmt(c.work) + ' · ' + transitionText(c);
-  if (c.mode === 'kakari') return c.partners + ' Partner · ' + fmt(c.perPartner) + ', Wechsel alle ' + fmt(c.swapEvery);
-  return c.rounds + ' × ' + fmt(c.work) + ' / ' + fmt(c.rest);
+  if (c.mode === 'randori') return c.rounds + ' Runden à ' + fmt(c.work) + ' · ' + transitionText(c);
+  if (c.mode === 'kakari') return fmt(c.perPartner) + ' pro Partner, je ' + fmt(c.swapEvery) + ' angreifen · ' + c.partners + ' Partner';
+  return c.rounds + ' Runden · ' + fmt(c.work) + ' Arbeit / ' + fmt(c.rest) + ' Pause';
 }
 
 function transitionText(c) {
-  if (c.transition === 'auto') return 'Pause ' + fmt(c.pause);
-  if (c.transition === 'wait') return 'Warten';
+  if (c.transition === 'auto') return 'dazwischen ' + fmt(c.pause) + ' Pause';
+  if (c.transition === 'wait') return 'Halt bis „Los“';
   return 'Pause + Warten';
 }
 
@@ -594,7 +605,7 @@ $('btnSettingsBack').addEventListener('click', () => show('setup'));
 $('btnSavePreset').addEventListener('click', () => {
   $('btnSavePreset').hidden = true;
   $('presetForm').hidden = false;
-  $('presetName').value = describe(config);
+  $('presetName').value = shortName(config);
   $('presetName').focus();
   $('presetName').select();
 });
