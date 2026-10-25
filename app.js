@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '10';
+const APP_VERSION = '11';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -262,7 +262,6 @@ function stopTraining() {
   run = null;
   mediaOff();
   releaseAwake();
-  try { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); } catch (e) { /* egal */ }
   show('setup');
 }
 
@@ -577,6 +576,19 @@ document.addEventListener('click', (e) => {
 
 $('btnStart').addEventListener('click', startTraining);
 $('btnSettings').addEventListener('click', () => show('settings'));
+$('btnFullscreen').addEventListener('click', () => {
+  try {
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    else document.documentElement.requestFullscreen().catch(() => {});
+  } catch (e) { /* nicht unterstützt */ }
+});
+function updateFullscreenButton() {
+  const fs = !!document.fullscreenElement;
+  $('btnFullscreen').textContent = fs ? 'Vollbild aus' : 'Vollbild';
+  // In der installierten App gibt es keine Browserleiste, der Knopf ist dort unnötig
+  $('btnFullscreen').hidden = !document.fullscreenEnabled || (isStandalone() && !fs);
+}
+document.addEventListener('fullscreenchange', updateFullscreenButton);
 $('btnSettingsBack').addEventListener('click', () => show('setup'));
 // Eingebettet (z. B. als Artifact) sind prompt()/confirm() gesperrt, darum eigene Bedienelemente
 $('btnSavePreset').addEventListener('click', () => {
@@ -743,6 +755,7 @@ $('btnDiag').addEventListener('click', async () => {
 if (!FIELDS[config.mode]) config = Object.assign({}, BUILTIN[0]);
 applyTheme();
 $('appVersion').textContent = 'Version ' + APP_VERSION;
+updateFullscreenButton();
 show('setup');
 
 if ('serviceWorker' in navigator) {

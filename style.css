@@ -242,3 +242,5 @@ html[data-theme="aquarell"] body.phase-wait .muted { color: #5B5579; }
   flex: 1 1 100%; margin: 0; padding: 12px; border-radius: 10px; background: var(--bg);
   font-family: ui-monospace, monospace; font-size: 13px; line-height: 1.5; white-space: pre-wrap; user-select: text;
 }
+
+.bar-btns { display: flex; gap: 10px; }
