@@ -4,6 +4,13 @@ Ideen für später, noch nicht umgesetzt.
 
 ## Android-App mit echtem Ducking (eigener Branch)
 
+Zielgerät: Samsung Galaxy Tab S8.
+
+Vorher ausprobieren (ohne Programmierung, nur Samsung-Funktionen):
+- „Separater App-Sound“ (Einstellungen → Töne und Vibration): Spotify auf die Bluetooth-Box,
+  die Uhr über den Tablet-Lautsprecher
+- „Sound Assistant“ (Good Lock, Galaxy Store): Lautstärke pro App, Spotify leiser als die Uhr
+
 Ziel: Spotify läuft parallel auf demselben Tablet, beim Gong wird die Musik automatisch leiser.
 
 - Die Uhr als Android-App verpacken (App-Hülle mit WebView um die vorhandene Web-App)
