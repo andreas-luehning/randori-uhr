@@ -147,8 +147,9 @@ const sounds = {
 /* ================= Medientasten (Handsender) ================= */
 
 let silentAudio = null;
+// 10 s lang: Android zeigt eine Mediensitzung erst ab ca. 5 s Länge an
 function silentWavUrl() {
-  const rate = 8000, len = rate, buf = new ArrayBuffer(44 + len * 2), v = new DataView(buf);
+  const rate = 8000, len = rate * 10, buf = new ArrayBuffer(44 + len * 2), v = new DataView(buf);
   const s = (o, str) => { for (let i = 0; i < str.length; i++) v.setUint8(o + i, str.charCodeAt(i)); };
   s(0, 'RIFF'); v.setUint32(4, 36 + len * 2, true); s(8, 'WAVE'); s(12, 'fmt ');
   v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
