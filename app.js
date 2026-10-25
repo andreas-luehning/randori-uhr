@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '12';
+const APP_VERSION = '13';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -175,7 +175,7 @@ function silentWavUrl() {
 function mediaOn() {
   if (!settings.media || !('mediaSession' in navigator)) return;
   if (!silentAudio) { silentAudio = new Audio(silentWavUrl()); silentAudio.loop = true; }
-  silentAudio.play().catch(() => {});
+  silentAudio.play().then(updateMediaState).catch(updateMediaState);
   try { navigator.mediaSession.metadata = new MediaMetadata({ title: 'Randori-Uhr' }); } catch (e) { /* alt */ }
   const handlers = { play: primary, pause: primary, stop: primary, nexttrack: secondary, previoustrack: secondary };
   Object.keys(handlers).forEach((a) => {
@@ -193,6 +193,23 @@ function mediaOn() {
 
 function mediaOff() {
   if (silentAudio) silentAudio.pause();
+  updateMediaState();
+}
+
+function mediaActive() { return !!(silentAudio && !silentAudio.paused); }
+
+// Medientasten bleiben aktiv, solange die Uhr offen ist, nicht nur im Training.
+// Der Browser erlaubt den (stummen) Ton erst nach einer Berührung, darum beim ersten Tippen starten.
+document.addEventListener('pointerdown', () => {
+  if (settings.media && !mediaActive()) mediaOn();
+}, true);
+
+function updateMediaState() {
+  const el = $('appVersion');
+  if (!el) return;
+  let text = 'Version ' + APP_VERSION;
+  if (settings.media) text += mediaActive() ? ' · Handsender bereit' : ' · Handsender: einmal tippen';
+  el.textContent = text;
 }
 
 /* ================= Bildschirm wach halten ================= */
@@ -263,7 +280,6 @@ function finish() {
   run.i = run.segs.length;
   sounds.finish();
   clearInterval(timer);
-  mediaOff();
   releaseAwake();
   render();
 }
@@ -271,7 +287,6 @@ function finish() {
 function stopTraining() {
   clearInterval(timer);
   run = null;
-  mediaOff();
   releaseAwake();
   show('setup');
 }
@@ -765,7 +780,7 @@ $('btnDiag').addEventListener('click', async () => {
 
 if (!FIELDS[config.mode]) config = Object.assign({}, BUILTIN[0]);
 applyTheme();
-$('appVersion').textContent = 'Version ' + APP_VERSION;
+updateMediaState();
 updateFullscreenButton();
 show('setup');
 
