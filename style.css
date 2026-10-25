@@ -361,3 +361,9 @@ html[data-theme="magie"] body.phase-wait .muted { color: #3E5670; }
   .main { height: 60px; font-size: 19px; padding: 0 8px; }
   .role b { font-size: 22px; }
 }
+
+/* Logo: Stoppuhr mit Judogürtel, Gürtel in der Akzentfarbe des Farbschemas */
+.bar h1 { display: flex; align-items: center; gap: 10px; }
+.bar h1 .version { align-self: flex-end; margin-bottom: 6px; }
+.logo { width: 44px; height: 44px; flex: none; }
+@media (max-width: 600px) { .logo { width: 34px; height: 34px; } }
