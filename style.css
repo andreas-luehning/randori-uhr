@@ -276,3 +276,88 @@ html[data-theme="magie"] {
   --done-soft: #866680;
 }
 html[data-theme="magie"] body.phase-wait .muted { color: #3E5670; }
+
+/* ---------- Smartphone ---------- */
+/* Gilt nur für schmale oder niedrige Bildschirme, die Tablet-Ansicht im Querformat bleibt unverändert. */
+
+/* Einstellungszeilen nicht zusammenquetschen (sonst überlappen sie bei wenig Höhe) */
+.settings-list .row { flex-shrink: 0; }
+
+@media (orientation: portrait), (max-width: 760px) {
+  /* Vorlagen-Spalte bekommt ihre natürliche Höhe, statt auf 0 zu schrumpfen */
+  .setup-grid .col { flex: none; overflow: visible; }
+  .setup-grid { flex: none; }
+  #setup { height: auto; min-height: 100dvh; }
+  #settings { height: auto; min-height: 100dvh; }
+}
+
+@media (max-width: 600px) {
+  .screen { padding: max(14px, env(safe-area-inset-top)) 16px max(14px, env(safe-area-inset-bottom)); gap: 14px; }
+  .bar { flex-wrap: wrap; }
+  .bar h1 { font-size: 26px; }
+  .bar-btns { margin-left: auto; }
+  .panel { padding: 16px; }
+  .preset-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .preset { min-height: 76px; padding: 12px 14px; }
+  .preset b { font-size: 17px; }
+  .preset span { font-size: 13px; }
+  .stepper { gap: 6px; }
+  .stepper button { width: 46px; height: 46px; }
+  .stepper output { min-width: 64px; font-size: 26px; }
+  .field .lbl { font-size: 16px; }
+  .seg button { font-size: 14px; padding: 0 4px; }
+  .row { padding: 12px 14px; }
+
+  /* Laufende Uhr hochkant: Bedienleiste unter der Zeit, Knöpfe in voller Breite */
+  #run { gap: 12px; }
+  .run-title { font-size: 20px; }
+  .role { padding: 10px 14px; border-radius: 14px; }
+  .role small { font-size: 12px; }
+  .role b { font-size: 26px; }
+  .phase-label { font-size: 17px; letter-spacing: 0.12em; }
+  .time { font-size: min(30vw, 34vh); }
+  body.has-roles .time { font-size: min(28vw, 30vh); }
+  .run-bottom { flex-direction: column; align-items: stretch; gap: 12px; }
+  .controls { width: 100%; gap: 10px; margin-left: 0; }
+  .ctl { min-width: 0; flex: 0 0 64px; height: 64px; font-size: 16px; padding: 0 8px; border-radius: 16px; }
+  .main { flex: 1; min-width: 0; height: 64px; padding: 0 12px; font-size: 22px; border-radius: 16px; }
+  body.phase-wait .main { min-width: 0; }
+  .wait-box h2 { font-size: 44px; }
+  .wait-box p { font-size: 17px; }
+}
+
+/* Handy quer: wenig Höhe, alles kompakter, damit sich nichts überlappt */
+@media (max-height: 500px) {
+  .screen { padding: max(8px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); gap: 8px; }
+  #setup, #settings { height: auto; min-height: 100dvh; }
+  body { overflow: auto; }
+  .bar h1 { font-size: 22px; }
+  .chip { min-height: 40px; }
+
+  #run { gap: 6px; height: 100dvh; }
+  .run-title { font-size: 17px; }
+  .progress div { height: 6px; }
+  .role { padding: 4px 12px; border-radius: 10px; }
+  .role small { font-size: 10px; }
+  .role b { font-size: 20px; }
+  .phase-label { font-size: 13px; letter-spacing: 0.12em; }
+  .time { font-size: min(24vw, 46vh); }
+  body.has-roles .time { font-size: min(22vw, 38vh); }
+  .run-bottom { flex-direction: row; flex-wrap: nowrap; gap: 12px; }
+  .next span { font-size: 15px; }
+  .next small { font-size: 11px; }
+  .controls { width: auto; margin-left: auto; gap: 8px; }
+  .ctl { flex: none; min-width: 52px; height: 52px; font-size: 15px; padding: 0 10px; border-radius: 14px; }
+  .main { flex: none; min-width: 150px; height: 52px; font-size: 20px; padding: 0 18px; border-radius: 14px; }
+  body.phase-wait .main { min-width: 170px; }
+  .wait-box h2 { font-size: 36px; }
+  .wait-box p { font-size: 14px; margin-top: 6px; }
+}
+
+/* Sehr schmale Handys */
+@media (max-width: 380px) {
+  .run-title { font-size: 16px; letter-spacing: 0.04em; white-space: nowrap; }
+  .ctl { flex: 0 0 54px; height: 60px; font-size: 14px; padding: 0 4px; }
+  .main { height: 60px; font-size: 19px; padding: 0 8px; }
+  .role b { font-size: 22px; }
+}
