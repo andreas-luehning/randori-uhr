@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E1116">
+<title>Randori-Uhr</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="on-setup">
+
+<!-- Einstellungen der Übung -->
+<div id="setup" class="screen">
+  <header class="bar">
+    <h1>Randori-Uhr</h1>
+    <button id="btnSettings" class="chip" type="button">Einstellungen</button>
+  </header>
+  <div class="setup-grid">
+    <section class="col">
+      <h2 class="label">Vorlagen</h2>
+      <div id="presetList" class="preset-list"></div>
+      <button id="btnSavePreset" class="chip dashed" type="button">+ Als Vorlage speichern</button>
+    </section>
+    <section class="panel">
+      <div class="seg" role="radiogroup" aria-label="Modus">
+        <button type="button" role="radio" data-mode="randori">Randori</button>
+        <button type="button" role="radio" data-mode="kakari">Kakari Geiko</button>
+        <button type="button" role="radio" data-mode="zirkel">Zirkel</button>
+      </div>
+      <div id="fields" class="fields"></div>
+      <div class="spacer"></div>
+      <p id="summary" class="muted"></p>
+      <button id="btnStart" class="primary big" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z" fill="currentColor"/></svg>
+        Start
+      </button>
+    </section>
+  </div>
+</div>
+
+<!-- App-Einstellungen -->
+<div id="settings" class="screen" hidden>
+  <header class="bar">
+    <h1>Einstellungen</h1>
+    <button id="btnSettingsBack" class="chip" type="button">Fertig</button>
+  </header>
+  <div class="settings-list">
+    <label class="row">
+      <span>Lautstärke</span>
+      <input id="setVolume" type="range" min="0" max="1" step="0.05">
+    </label>
+    <div class="row">
+      <span>Ton testen</span>
+      <span class="btns">
+        <button class="chip" type="button" data-sound="start">Start</button>
+        <button class="chip" type="button" data-sound="end">Ende</button>
+        <button class="chip" type="button" data-sound="warn">Vorwarnung</button>
+        <button class="chip" type="button" data-sound="swap">Wechsel</button>
+      </span>
+    </div>
+    <label class="row">
+      <span>Vorwarnung vor Rundenende</span>
+      <select id="setWarn">
+        <option value="0">aus</option>
+        <option value="10">10 s</option>
+        <option value="15">15 s</option>
+        <option value="30">30 s</option>
+      </select>
+    </label>
+    <label class="row">
+      <span>Vorlauf vor der ersten Runde</span>
+      <select id="setLead">
+        <option value="0">keiner</option>
+        <option value="5">5 s</option>
+        <option value="10">10 s</option>
+        <option value="15">15 s</option>
+      </select>
+    </label>
+    <label class="row">
+      <span>Medientasten (Play/Pause) für Handsender<small>spielt dafür im Training einen stummen Ton</small></span>
+      <input id="setMedia" type="checkbox">
+    </label>
+    <div class="row">
+      <span>Handsender testen<small>Taste drücken – hier erscheint, was ankommt</small></span>
+      <b id="keyTest" class="keytest">–</b>
+    </div>
+  </div>
+</div>
+
+<!-- Laufende Uhr -->
+<div id="run" class="screen" hidden>
+  <div class="run-top">
+    <span id="runMode" class="run-title"></span>
+    <span id="runRound" class="run-title"></span>
+  </div>
+  <div id="progress" class="progress"></div>
+  <div id="roles" class="roles" hidden>
+    <div id="roleA" class="role"><small></small><b>Partner A</b></div>
+    <div id="roleB" class="role"><small></small><b>Partner B</b></div>
+  </div>
+  <div class="run-center">
+    <div id="phaseLabel" class="phase-label"></div>
+    <div id="time" class="time"></div>
+    <div id="waitBox" class="wait-box" hidden>
+      <h2>Neue Partner suchen</h2>
+      <p>Tippe auf „Los“, sobald alle einen Partner haben.</p>
+      <p id="waitSince" class="muted"></p>
+    </div>
+  </div>
+  <div class="run-bottom">
+    <div class="next">
+      <small>Danach</small>
+      <span id="nextInfo"></span>
+    </div>
+    <div class="controls">
+      <button id="btnStop" class="ctl" type="button" aria-label="Training beenden">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg>
+      </button>
+      <button id="btnPlus" class="ctl" type="button">+30 s</button>
+      <button id="btnSkip" class="ctl" type="button" aria-label="Phase überspringen">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l10 7-10 7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" fill="none"/><path d="M19 5v14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <button id="btnMain" class="main" type="button">Pause</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
