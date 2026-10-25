@@ -603,21 +603,31 @@ $('presetForm').addEventListener('submit', (e) => {
 $('btnMain').addEventListener('click', primary);
 $('btnSkip').addEventListener('click', skip);
 $('btnPlus').addEventListener('click', plus30);
-// Beenden mit zweitem Tippen bestätigen
-const STOP_ICON = $('btnStop').innerHTML;
-let stopArmed = null;
-function disarmStop() {
-  clearTimeout(stopArmed);
-  stopArmed = null;
-  $('btnStop').classList.remove('armed');
-  $('btnStop').innerHTML = STOP_ICON;
+// Beenden nur durch langes Drücken (1 s), damit es nicht aus Versehen passiert
+const STOP_HOLD_MS = 1000;
+let stopHold = null;
+let stopHintTimer = null;
+function cancelStopHold() {
+  if (!stopHold) return;
+  clearTimeout(stopHold);
+  stopHold = null;
+  $('btnStop').classList.remove('holding');
 }
-$('btnStop').addEventListener('click', () => {
-  if (stopArmed) { disarmStop(); stopTraining(); return; }
-  $('btnStop').classList.add('armed');
-  $('btnStop').textContent = 'Beenden?';
-  stopArmed = setTimeout(disarmStop, 3000);
+$('btnStop').addEventListener('pointerdown', (e) => {
+  e.preventDefault();
+  $('btnStop').classList.add('holding');
+  stopHold = setTimeout(() => { stopHold = null; $('btnStop').classList.remove('holding'); stopTraining(); }, STOP_HOLD_MS);
 });
+['pointerup', 'pointerleave', 'pointercancel'].forEach((ev) => $('btnStop').addEventListener(ev, () => {
+  if (stopHold) {
+    // Zu kurz gedrückt: kurzer Hinweis
+    cancelStopHold();
+    clearTimeout(stopHintTimer);
+    $('btnStop').classList.add('hint');
+    stopHintTimer = setTimeout(() => $('btnStop').classList.remove('hint'), 1500);
+  }
+}));
+$('btnStop').addEventListener('contextmenu', (e) => e.preventDefault());
 
 $('setTheme').addEventListener('change', (e) => { settings.theme = e.target.value; saveSettings(); applyTheme(); });
 $('setVolume').addEventListener('input', (e) => { settings.volume = Number(e.target.value); saveSettings(); });

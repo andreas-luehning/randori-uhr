@@ -172,8 +172,19 @@ body.phase-swap .main span { color: var(--swap-bg); }
 body.phase-prep .main span { color: var(--bg); }
 body.phase-done .main span { color: var(--done-bg); }
 body.phase-wait .main { background: var(--los-bg); min-width: 240px; }
-.ctl.armed { background: var(--swap-bg); color: var(--swap-text); font-size: 18px; padding: 0 18px; }
-body.phase-swap .ctl.armed { background: var(--swap-text); color: var(--swap-bg); }
+#btnStop { position: relative; overflow: hidden; touch-action: none; -webkit-touch-callout: none; }
+#btnStop::before {
+  content: ""; position: absolute; inset: 0; background: currentColor; opacity: 0.35;
+  transform: scaleX(0); transform-origin: left;
+}
+#btnStop.holding::before { transform: scaleX(1); transition: transform 1s linear; }
+#btnStop::after {
+  content: "Gedrückt halten"; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+  white-space: nowrap; font-size: 14px; font-weight: 700; padding: 6px 10px; border-radius: 8px;
+  background: var(--swap-bg); color: var(--swap-text); opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+#btnStop.hint::after { opacity: 1; }
+#run .run-bottom { overflow: visible; }
 body.phase-wait .main span { color: var(--los-text); }
 
 @media (orientation: portrait), (max-width: 760px) {
