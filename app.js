@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '9';
+const APP_VERSION = '10';
 
 /* ================= Vorlagen & Speicher ================= */
 
