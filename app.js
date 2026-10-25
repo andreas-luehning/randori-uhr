@@ -1,15 +1,15 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '17';
+const APP_VERSION = '18';
 
 /* ================= Vorlagen & Speicher ================= */
 
 // Namensschema wie im Training üblich: Randori 3 × 3 = 3 Runden à 3 Min,
-// Kakari 2 × 2 = 2 Min pro Partner, aufgeteilt auf 2 Angriffe
+// Kakari 2 × 2 = 2 Runden à 2 Min mit einem Partner (je 1 Min Tori), danach Partnerwechsel
 const BUILTIN = [
   { id: 'randori33', name: 'Randori 3 × 3', mode: 'randori', rounds: 3, work: 180, transition: 'pausewait', pause: 30 },
-  { id: 'kakari22', name: 'Kakari 2 × 2', mode: 'kakari', partners: 4, perPartner: 120, swapEvery: 60, swapPause: 5, transition: 'wait', pause: 30 },
+  { id: 'kakari22', name: 'Kakari 2 × 2', mode: 'kakari', partners: 2, perPartner: 120, swapPause: 5, transition: 'wait', pause: 30 },
 ];
 
 // Startwerte beim Wechsel des Modus (Zirkel hat keine eigene Vorlage)
@@ -55,14 +55,14 @@ function mins(sec) { return sec % 60 === 0 ? String(sec / 60) : fmt(sec); }
 // Vorschlag für den Namen einer neuen Vorlage, im Schema „Randori 3 × 3“
 function shortName(c) {
   if (c.mode === 'randori') return 'Randori ' + c.rounds + ' × ' + mins(c.work);
-  if (c.mode === 'kakari') return 'Kakari ' + mins(c.perPartner) + ' × ' + Math.ceil(c.perPartner / c.swapEvery);
+  if (c.mode === 'kakari') return 'Kakari ' + mins(c.perPartner) + ' × ' + c.partners;
   return 'Zirkel ' + c.work + '/' + c.rest + ' × ' + c.rounds;
 }
 
 // Erklärung unter dem Vorlagennamen
 function describe(c) {
   if (c.mode === 'randori') return c.rounds + ' Runden à ' + fmt(c.work) + ' · ' + transitionText(c);
-  if (c.mode === 'kakari') return fmt(c.perPartner) + ' pro Partner, je ' + fmt(c.swapEvery) + ' angreifen · ' + c.partners + ' Partner';
+  if (c.mode === 'kakari') return c.partners + ' Runden à ' + fmt(c.perPartner) + ' · je ' + fmt(c.perPartner / 2) + ' Tori';
   return c.rounds + ' Runden · ' + fmt(c.work) + ' Arbeit / ' + fmt(c.rest) + ' Pause';
 }
 
@@ -89,12 +89,14 @@ function buildSegments(c) {
       if (r < c.rounds) transition(r, c.rounds);
     }
   } else if (c.mode === 'kakari') {
+    // Eine Runde = ein Partner; Rollenwechsel immer zur Hälfte der Zeit
+    const swapEvery = c.perPartner / 2;
     for (let p = 1; p <= c.partners; p++) {
       let t = 0;
       let attacker = 'A';
       let first = true;
       while (t < c.perPartner) {
-        const d = Math.min(c.swapEvery, c.perPartner - t);
+        const d = Math.min(swapEvery, c.perPartner - t);
         segs.push({ type: 'work', dur: d, round: p, total: c.partners, attacker, swapStart: !first, from: t, partDur: c.perPartner });
         t += d;
         attacker = attacker === 'A' ? 'B' : 'A';
@@ -353,7 +355,7 @@ function nextText(i) {
   const c = run.cfg;
   if (!n) return 'Ende';
   if (n.type === 'work') {
-    if (c.mode === 'kakari') return n.attacker + ' greift an · ' + fmt(n.dur);
+    if (c.mode === 'kakari') return n.attacker + ' ist Tori · ' + fmt(n.dur);
     return (c.mode === 'zirkel' ? 'Arbeit ' : 'Runde ' + n.round + ' · ') + fmt(n.dur);
   }
   // Bei Randori und Kakari ist die Pause zugleich die Zeit für den Partnerwechsel
@@ -415,7 +417,7 @@ function render() {
 
   $('runMode').textContent = c.mode === 'kakari' ? 'Kakari Geiko' : c.mode === 'zirkel' ? 'Zirkel' : 'Randori';
   const total = c.mode === 'kakari' ? c.partners : c.rounds;
-  const word = c.mode === 'kakari' ? 'Partner' : 'Runde';
+  const word = 'Runde';
   $('runRound').textContent = run.done ? 'Fertig' : s.round ? word + ' ' + s.round + ' / ' + total : '';
 
   const showRoles = c.mode === 'kakari' && (type === 'work' || type === 'swap');
@@ -426,7 +428,7 @@ function render() {
       const el = $('role' + p);
       const attacking = s.attacker === p;
       el.classList.toggle('attack', attacking);
-      el.querySelector('small').textContent = type === 'swap' ? (attacking ? 'GREIFT GLEICH AN' : 'GLEICH UKE') : (attacking ? 'GREIFT AN' : 'UKE');
+      el.querySelector('small').textContent = type === 'swap' ? (attacking ? 'GLEICH TORI' : 'GLEICH UKE') : (attacking ? 'TORI' : 'UKE');
     });
   }
 
@@ -436,10 +438,10 @@ function render() {
   let label = '';
   if (run.paused) label = 'Angehalten';
   else if (type === 'prep') label = 'Gleich geht’s los';
-  else if (type === 'work') label = c.mode === 'zirkel' ? 'Arbeit' : c.mode === 'kakari' ? s.attacker + ' greift an' : 'Hajime';
+  else if (type === 'work') label = c.mode === 'zirkel' ? 'Arbeit' : c.mode === 'kakari' ? s.attacker + ' ist Tori' : 'Hajime';
   else if (type === 'pause') label = c.mode === 'zirkel' ? 'Pause' : 'Pause · Partner wechseln';
   else if (type === 'swap') label = 'Rollenwechsel';
-  else if (type === 'done') label = 'Sore made · geschafft';
+  else if (type === 'done') label = 'Sore-made · geschafft';
   $('phaseLabel').textContent = label;
   $('phaseLabel').hidden = isWait;
 
@@ -463,10 +465,9 @@ const FIELDS = {
     { k: 'pause', label: 'Pause', type: 'time', step: 5, min: 5, max: 300, when: (c) => c.transition !== 'wait' },
   ],
   kakari: [
-    { k: 'partners', label: 'Partner', type: 'count', min: 1, max: 30 },
-    { k: 'perPartner', label: 'Zeit pro Partner', type: 'time', step: 30, min: 30, max: 900, sub: (c) => 'je Angriff ' + fmt(c.swapEvery) },
-    { k: 'swapEvery', label: 'Rollenwechsel alle', type: 'time', step: 15, min: 15, max: (c) => c.perPartner },
-    { k: 'swapPause', label: 'Tauschpause', type: 'time', step: 1, min: 0, max: 30 },
+    { k: 'partners', label: 'Runden', type: 'count', min: 1, max: 30, sub: () => 'jede Runde mit neuem Partner' },
+    { k: 'perPartner', label: 'Rundenzeit', type: 'time', step: 30, min: 30, max: 900, sub: (c) => 'je ' + fmt(c.perPartner / 2) + ' Tori, dann Rollenwechsel' },
+    { k: 'swapPause', label: 'Zeit für Rollenwechsel', type: 'time', step: 1, min: 0, max: 30 },
     { k: 'transition', type: 'transition' },
     { k: 'pause', label: 'Pause', type: 'time', step: 5, min: 5, max: 300, when: (c) => c.transition !== 'wait' },
   ],
@@ -487,7 +488,7 @@ function renderSetup() {
   const html = FIELDS[config.mode].filter((f) => !f.when || f.when(config)).map((f) => {
     if (f.type === 'transition') {
       const hint = { auto: 'Pause zum Partnerwechsel, danach startet die nächste Runde von selbst.', wait: 'Die Uhr hält zum Partnerwechsel an, bis du auf „Los“ tippst.', pausewait: 'Pause zum Partnerwechsel, danach hält die Uhr bis „Los“.' }[config.transition];
-      return '<div class="field-col"><span class="lbl">' + (config.mode === 'kakari' ? 'Nach jedem Partner' : 'Nach jeder Runde') + '</span>' +
+      return '<div class="field-col"><span class="lbl">' + 'Nach jeder Runde (Partnerwechsel)' + '</span>' +
         '<div class="seg" role="radiogroup" aria-label="Übergang">' +
         TRANSITIONS.map(([v, t]) => '<button type="button" role="radio" data-transition="' + v + '" aria-checked="' + (config.transition === v) + '">' + t + '</button>').join('') +
         '</div><small class="muted">' + hint + '</small></div>';
@@ -532,10 +533,6 @@ function stepField(k, d) {
   if (f.type === 'time' && step > 1) v = Math.round(v / step) * step || (d > 0 ? step : f.min);
   v = Math.min(max, Math.max(f.min, v));
   config[k] = v;
-  if (k === 'perPartner') {
-    // Standard bleibt: Wechsel zur Hälfte der Zeit
-    if (config.swapEvery === old / 2 || config.swapEvery > v) config.swapEvery = v / 2;
-  }
   selectedPresetId = null;
   saveConfig();
   renderSetup();
