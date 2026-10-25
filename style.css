@@ -237,3 +237,8 @@ html[data-theme="aquarell"] body.phase-wait .muted { color: #5B5579; }
 .primary-chip { background: var(--accent); border-color: var(--accent); color: var(--accent-text); font-weight: 700; }
 
 .version { font-size: 14px; font-weight: 600; color: var(--muted); margin-left: 8px; letter-spacing: 0; }
+
+.diag-out {
+  flex: 1 1 100%; margin: 0; padding: 12px; border-radius: 10px; background: var(--bg);
+  font-family: ui-monospace, monospace; font-size: 13px; line-height: 1.5; white-space: pre-wrap; user-select: text;
+}

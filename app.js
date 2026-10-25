@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '8';
+const APP_VERSION = '9';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -524,7 +524,7 @@ function show(name) {
   document.body.classList.toggle('on-setup', name === 'setup');
   if (name !== 'run') document.body.className = 'on-' + name;
   if (name === 'setup') renderSetup();
-  if (name === 'settings') renderSettings();
+  if (name === 'settings') { renderSettings(); updateInstallUi(); }
 }
 
 function applyTheme() {
@@ -656,6 +656,86 @@ window.addEventListener('keydown', (e) => {
     e.preventDefault();
     if (!e.repeat) secondary();
   }
+});
+
+/* ================= Installation & Diagnose ================= */
+
+let installEvent = null;
+let installSignal = false;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  installEvent = e;
+  installSignal = true;
+  updateInstallUi();
+});
+window.addEventListener('appinstalled', () => {
+  installEvent = null;
+  $('installHint').textContent = 'Installiert. Die App liegt jetzt auf dem Startbildschirm.';
+  $('btnInstall').hidden = true;
+});
+
+function isStandalone() {
+  return matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches;
+}
+
+function updateInstallUi() {
+  const hint = $('installHint');
+  if (isStandalone()) { hint.textContent = 'Läuft bereits als installierte App.'; $('btnInstall').hidden = true; return; }
+  if (installEvent) { hint.textContent = 'Chrome meldet: installierbar.'; $('btnInstall').hidden = false; return; }
+  hint.textContent = 'Chrome hat (noch) kein Installationssignal gegeben. Diagnose hilft weiter.';
+  $('btnInstall').hidden = true;
+}
+
+$('btnInstall').addEventListener('click', async () => {
+  if (!installEvent) return;
+  installEvent.prompt();
+  const res = await installEvent.userChoice;
+  $('installHint').textContent = res.outcome === 'accepted' ? 'Installation gestartet …' : 'Installation abgebrochen.';
+  installEvent = null;
+  $('btnInstall').hidden = true;
+});
+
+function loadImage(src) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img.naturalWidth + '×' + img.naturalHeight);
+    img.onerror = () => resolve('FEHLER');
+    img.src = src;
+  });
+}
+
+$('btnDiag').addEventListener('click', async () => {
+  const out = $('diagOut');
+  out.hidden = false;
+  const lines = [];
+  const add = (k, v) => { lines.push(k + ': ' + v); out.textContent = lines.join('\n'); };
+  add('Version', APP_VERSION);
+  add('Adresse', location.href);
+  add('Browser', (navigator.userAgent.match(/(Chrome|SamsungBrowser|Firefox|EdgA|OPR)\/[\d.]+/g) || ['?']).join(' '));
+  add('Android', (navigator.userAgent.match(/Android [\d.]+/) || ['nein'])[0]);
+  add('Modus', isStandalone() ? 'installierte App' : 'Browser-Tab');
+  add('Installationssignal', installSignal ? 'ja' : 'nein');
+  add('HTTPS', location.protocol === 'https:' ? 'ja' : 'NEIN');
+  try {
+    const reg = await navigator.serviceWorker.getRegistration();
+    add('Service Worker', reg ? (reg.active ? 'aktiv' : 'registriert, nicht aktiv') + (navigator.serviceWorker.controller ? ', steuert Seite' : ', steuert Seite noch nicht') : 'KEINER');
+  } catch (e) { add('Service Worker', 'FEHLER ' + e.message); }
+  const link = document.querySelector('link[rel="manifest"]');
+  try {
+    const res = await fetch(link.href, { cache: 'no-store' });
+    add('Manifest', res.status + ' ' + (res.headers.get('content-type') || ''));
+    const m = await res.json();
+    add('  name / id', m.name + ' / ' + (m.id || '-'));
+    add('  start_url / scope', m.start_url + ' / ' + m.scope);
+    add('  display', m.display + (m.orientation ? ', ' + m.orientation : ''));
+    for (const ic of m.icons || []) {
+      const url = new URL(ic.src, link.href).href;
+      add('  Icon ' + ic.sizes + (ic.purpose ? ' ' + ic.purpose : ''), await loadImage(url + '?d=' + Date.now()));
+    }
+  } catch (e) { add('Manifest', 'FEHLER ' + e.message); }
+  try {
+    if (navigator.getInstalledRelatedApps) add('Verwandte Apps', (await navigator.getInstalledRelatedApps()).length);
+  } catch (e) { /* egal */ }
 });
 
 /* ================= Start ================= */
