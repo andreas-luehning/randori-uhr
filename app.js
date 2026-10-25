@@ -574,10 +574,25 @@ document.addEventListener('click', (e) => {
 $('btnStart').addEventListener('click', startTraining);
 $('btnSettings').addEventListener('click', () => show('settings'));
 $('btnSettingsBack').addEventListener('click', () => show('setup'));
+// Eingebettet (z. B. als Artifact) sind prompt()/confirm() gesperrt, darum eigene Bedienelemente
 $('btnSavePreset').addEventListener('click', () => {
-  const name = prompt('Name der Vorlage', describe(config));
+  $('btnSavePreset').hidden = true;
+  $('presetForm').hidden = false;
+  $('presetName').value = describe(config);
+  $('presetName').focus();
+  $('presetName').select();
+});
+function closePresetForm() {
+  $('presetForm').hidden = true;
+  $('btnSavePreset').hidden = false;
+}
+$('presetCancel').addEventListener('click', closePresetForm);
+$('presetForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const name = $('presetName').value.trim();
   if (!name) return;
-  const p = Object.assign({}, config, { id: 'c' + Date.now(), name: name.trim().slice(0, 40) });
+  closePresetForm();
+  const p = Object.assign({}, config, { id: 'c' + Date.now(), name: name.slice(0, 40) });
   customPresets.push(p);
   selectedPresetId = p.id;
   store.set('presets', customPresets);
@@ -588,7 +603,21 @@ $('btnSavePreset').addEventListener('click', () => {
 $('btnMain').addEventListener('click', primary);
 $('btnSkip').addEventListener('click', skip);
 $('btnPlus').addEventListener('click', plus30);
-$('btnStop').addEventListener('click', () => { if (confirm('Training beenden?')) stopTraining(); });
+// Beenden mit zweitem Tippen bestätigen
+const STOP_ICON = $('btnStop').innerHTML;
+let stopArmed = null;
+function disarmStop() {
+  clearTimeout(stopArmed);
+  stopArmed = null;
+  $('btnStop').classList.remove('armed');
+  $('btnStop').innerHTML = STOP_ICON;
+}
+$('btnStop').addEventListener('click', () => {
+  if (stopArmed) { disarmStop(); stopTraining(); return; }
+  $('btnStop').classList.add('armed');
+  $('btnStop').textContent = 'Beenden?';
+  stopArmed = setTimeout(disarmStop, 3000);
+});
 
 $('setTheme').addEventListener('change', (e) => { settings.theme = e.target.value; saveSettings(); applyTheme(); });
 $('setVolume').addEventListener('input', (e) => { settings.volume = Number(e.target.value); saveSettings(); });
@@ -603,6 +632,7 @@ const SECONDARY_KEYS = ['PageUp', 'ArrowLeft', 'ArrowUp', 'AudioVolumeDown', 'Me
 function showKey(text) { const el = $('keyTest'); if (el) el.textContent = text; }
 
 window.addEventListener('keydown', (e) => {
+  if (e.target.closest && e.target.closest('input, select, textarea')) return;
   showKey(e.key === ' ' ? 'Leertaste' : e.key);
   if (current === 'settings') return;
   if (PRIMARY_KEYS.includes(e.key)) {

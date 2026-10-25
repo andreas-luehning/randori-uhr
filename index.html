@@ -23,6 +23,11 @@
       <h2 class="label">Vorlagen</h2>
       <div id="presetList" class="preset-list"></div>
       <button id="btnSavePreset" class="chip dashed" type="button">+ Als Vorlage speichern</button>
+      <form id="presetForm" class="preset-form" hidden>
+        <input id="presetName" maxlength="40" aria-label="Name der Vorlage" autocomplete="off">
+        <button class="chip primary-chip" type="submit">Speichern</button>
+        <button id="presetCancel" class="chip" type="button">Abbrechen</button>
+      </form>
     </section>
     <section class="panel">
       <div class="seg" role="radiogroup" aria-label="Modus">

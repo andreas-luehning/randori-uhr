@@ -171,7 +171,9 @@ body.phase-pause .main span { color: var(--pause-bg); }
 body.phase-swap .main span { color: var(--swap-bg); }
 body.phase-prep .main span { color: var(--bg); }
 body.phase-done .main span { color: var(--done-bg); }
-body.phase-wait .main { background: var(--los-bg); min-width: min(560px, 60vw); height: 110px; font-size: clamp(36px, 5vw, 56px); }
+body.phase-wait .main { background: var(--los-bg); min-width: 240px; }
+.ctl.armed { background: var(--swap-bg); color: var(--swap-text); font-size: 18px; padding: 0 18px; }
+body.phase-swap .ctl.armed { background: var(--swap-text); color: var(--swap-bg); }
 body.phase-wait .main span { color: var(--los-text); }
 
 @media (orientation: portrait), (max-width: 760px) {
@@ -215,3 +217,10 @@ html[data-theme="aquarell"] {
   --done-soft: #4F8FC4;
 }
 html[data-theme="aquarell"] body.phase-wait .muted { color: #5B5579; }
+
+.preset-form { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.preset-form input {
+  flex: 1 1 220px; min-height: 48px; padding: 0 14px; border-radius: 12px;
+  background: var(--panel); border: 2px solid var(--accent); font-size: 17px; user-select: text;
+}
+.primary-chip { background: var(--accent); border-color: var(--accent); color: var(--accent-text); font-weight: 700; }
