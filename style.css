@@ -244,3 +244,35 @@ html[data-theme="aquarell"] body.phase-wait .muted { color: #5B5579; }
 }
 
 .bar-btns { display: flex; gap: 10px; }
+
+/* ---------- Farbschema „Magie“ (Nachtblau, Mauve, Eisblau, Mint) ---------- */
+html[data-theme="magie"] {
+  --bg: #162A41;
+  --panel: #1E3550;
+  --panel-2: #2A4462;
+  --line: #34506F;
+  --text: #EEF4F7;
+  --muted: #B9C6D3;
+  --accent: #BBD9D7;
+  --accent-text: #0E1C2C;
+  --accent-soft: #2C4A5E;
+
+  --work-bg: #162A41;
+  --work-text: #FFFFFF;
+  --work-soft: #2A4462;
+  --pause-bg: #BBD9D7;
+  --pause-text: #0E1C2C;
+  --pause-soft: #9CC3C0;
+  --swap-bg: #9D7D96;
+  --swap-text: #0E1C2C;
+  --swap-soft: #866680;
+  --wait-bg: #DAEBF3;
+  --wait-text: #0E1C2C;
+  --wait-soft: #BFD6E2;
+  --los-bg: #162A41;
+  --los-text: #DAEBF3;
+  --done-bg: #9D7D96;
+  --done-text: #0E1C2C;
+  --done-soft: #866680;
+}
+html[data-theme="magie"] body.phase-wait .muted { color: #3E5670; }
