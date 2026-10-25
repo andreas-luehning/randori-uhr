@@ -6,6 +6,13 @@
   --text: #F3F4F6;
   --muted: #A9B0BC;
   --accent: #3B82F6;
+  --accent-text: #FFFFFF;
+  --accent-soft: #172554;
+  --los-bg: #1D4ED8;
+  --los-text: #FFFFFF;
+  --swap-bg: #F59E0B;
+  --swap-text: #1C1205;
+  --swap-soft: #B45309;
 
   --work-bg: #0B1530;
   --work-text: #FFFFFF;
@@ -66,7 +73,7 @@ svg { width: 28px; height: 28px; }
 }
 .preset b { font-size: 19px; }
 .preset span { font-size: 14px; color: var(--muted); }
-.preset[aria-pressed="true"] { border-color: var(--accent); background: #172554; }
+.preset[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
 .preset .del {
   position: absolute; top: 6px; right: 6px; width: 36px; height: 36px; border-radius: 10px;
   border: 0; background: transparent; color: var(--muted); font-size: 20px;
@@ -80,7 +87,7 @@ svg { width: 28px; height: 28px; }
 
 .seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; background: var(--bg); padding: 6px; border-radius: 14px; }
 .seg button { border: 0; background: transparent; border-radius: 10px; min-height: 48px; font-size: 15px; color: var(--muted); padding: 0 6px; }
-.seg button[aria-checked="true"] { background: var(--accent); color: #fff; font-weight: 700; }
+.seg button[aria-checked="true"] { background: var(--accent); color: var(--accent-text); font-weight: 700; }
 
 .fields { display: flex; flex-direction: column; gap: 14px; }
 .field { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -93,7 +100,7 @@ svg { width: 28px; height: 28px; }
 .field-col .lbl { font-size: 17px; }
 
 .primary {
-  border: 0; background: var(--accent); color: #fff; border-radius: 18px;
+  border: 0; background: var(--accent); color: var(--accent-text); border-radius: 18px;
   display: flex; align-items: center; justify-content: center; gap: 12px; font-weight: 800;
 }
 .primary.big { min-height: 76px; font-size: 24px; }
@@ -114,10 +121,11 @@ svg { width: 28px; height: 28px; }
 
 /* ---------- Laufende Uhr ---------- */
 #run { gap: 14px; background: var(--work-bg); color: var(--work-text); --soft: var(--work-soft); transition: background-color .25s; }
-body.phase-pause #run, body.phase-swap #run { background: var(--pause-bg); color: var(--pause-text); --soft: var(--pause-soft); }
+body.phase-pause #run { background: var(--pause-bg); color: var(--pause-text); --soft: var(--pause-soft); }
+body.phase-swap #run { background: var(--swap-bg); color: var(--swap-text); --soft: var(--swap-soft); }
 body.phase-wait #run { background: var(--wait-bg); color: var(--wait-text); --soft: var(--wait-soft); }
 body.phase-prep #run { background: var(--bg); color: var(--text); --soft: var(--line); }
-body.phase-done #run { background: var(--done-bg); color: var(--done-text); --soft: #166534; }
+body.phase-done #run { background: var(--done-bg); color: var(--done-text); --soft: var(--done-soft, #166534); }
 
 .run-top { display: flex; justify-content: space-between; gap: 16px; }
 .run-title { font-size: clamp(22px, 3.4vw, 34px); font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
@@ -130,8 +138,8 @@ body.phase-done #run { background: var(--done-bg); color: var(--done-text); --so
 .role { border-radius: 18px; padding: 14px 22px; border: 2px solid var(--soft); display: flex; flex-direction: column; gap: 2px; }
 .role small { font-size: 14px; font-weight: 700; letter-spacing: 0.08em; }
 .role b { font-size: clamp(30px, 4.4vw, 52px); line-height: 1; }
-.role.attack { background: var(--accent); border-color: var(--accent); color: #fff; }
-body.phase-swap .role.attack { background: var(--pause-text); border-color: var(--pause-text); color: var(--pause-bg); }
+.role.attack { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+body.phase-swap .role.attack { background: var(--swap-text); border-color: var(--swap-text); color: var(--swap-bg); }
 
 .run-center { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
 .phase-label { font-size: clamp(20px, 3vw, 32px); font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; min-height: 1.2em; }
@@ -159,11 +167,12 @@ body.paused .time { opacity: 0.45; }
   background: currentColor; font-size: 26px; font-weight: 800;
 }
 .main span { color: var(--work-bg); }
-body.phase-pause .main span, body.phase-swap .main span { color: var(--pause-bg); }
+body.phase-pause .main span { color: var(--pause-bg); }
+body.phase-swap .main span { color: var(--swap-bg); }
 body.phase-prep .main span { color: var(--bg); }
 body.phase-done .main span { color: var(--done-bg); }
-body.phase-wait .main { background: #1D4ED8; min-width: min(560px, 60vw); height: 110px; font-size: clamp(36px, 5vw, 56px); }
-body.phase-wait .main span { color: #fff; }
+body.phase-wait .main { background: var(--los-bg); min-width: min(560px, 60vw); height: 110px; font-size: clamp(36px, 5vw, 56px); }
+body.phase-wait .main span { color: var(--los-text); }
 
 @media (orientation: portrait), (max-width: 760px) {
   body { overflow: auto; }
@@ -174,3 +183,35 @@ body.phase-wait .main span { color: #fff; }
   .main { flex: 1; min-width: 0; }
 }
 body.phase-wait .muted { color: #4B5160; }
+
+/* ---------- Farbschema „Aquarell“ (Palette aus dem Buch) ---------- */
+html[data-theme="aquarell"] {
+  --bg: #2A2640;
+  --panel: #353050;
+  --panel-2: #433D63;
+  --line: #4C4670;
+  --text: #F4F1EA;
+  --muted: #C9C4DA;
+  --accent: #6AAADE;
+  --accent-text: #1F1B33;
+  --accent-soft: #3C4A78;
+
+  --work-bg: #5B5579;
+  --work-text: #FFFFFF;
+  --work-soft: #474163;
+  --pause-bg: #EFE108;
+  --pause-text: #1F1B33;
+  --pause-soft: #CFC200;
+  --swap-bg: #EC613F;
+  --swap-text: #1F1B33;
+  --swap-soft: #C94A2C;
+  --wait-bg: #F4F1EA;
+  --wait-text: #1F1B33;
+  --wait-soft: #DDD8CC;
+  --los-bg: #6AAADE;
+  --los-text: #1F1B33;
+  --done-bg: #6AAADE;
+  --done-text: #1F1B33;
+  --done-soft: #4F8FC4;
+}
+html[data-theme="aquarell"] body.phase-wait .muted { color: #5B5579; }

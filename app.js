@@ -16,7 +16,7 @@ const MODE_DEFAULTS = {
   zirkel: BUILTIN[4],
 };
 
-const DEFAULT_SETTINGS = { volume: 0.9, warn: 10, lead: 5, media: false };
+const DEFAULT_SETTINGS = { volume: 0.9, warn: 10, lead: 5, media: false, theme: 'klassisch' };
 
 const store = {
   get(key, fallback) {
@@ -523,7 +523,15 @@ function show(name) {
   if (name === 'settings') renderSettings();
 }
 
+function applyTheme() {
+  document.documentElement.dataset.theme = settings.theme;
+  const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta && bg) meta.content = bg;
+}
+
 function renderSettings() {
+  $('setTheme').value = settings.theme;
   $('setVolume').value = settings.volume;
   $('setWarn').value = String(settings.warn);
   $('setLead').value = String(settings.lead);
@@ -582,6 +590,7 @@ $('btnSkip').addEventListener('click', skip);
 $('btnPlus').addEventListener('click', plus30);
 $('btnStop').addEventListener('click', () => { if (confirm('Training beenden?')) stopTraining(); });
 
+$('setTheme').addEventListener('change', (e) => { settings.theme = e.target.value; saveSettings(); applyTheme(); });
 $('setVolume').addEventListener('input', (e) => { settings.volume = Number(e.target.value); saveSettings(); });
 $('setWarn').addEventListener('change', (e) => { settings.warn = Number(e.target.value); saveSettings(); });
 $('setLead').addEventListener('change', (e) => { settings.lead = Number(e.target.value); saveSettings(); });
@@ -608,6 +617,7 @@ window.addEventListener('keydown', (e) => {
 /* ================= Start ================= */
 
 if (!FIELDS[config.mode]) config = Object.assign({}, BUILTIN[0]);
+applyTheme();
 show('setup');
 
 if ('serviceWorker' in navigator) {
