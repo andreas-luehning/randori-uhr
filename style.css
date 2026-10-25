@@ -235,3 +235,5 @@ html[data-theme="aquarell"] body.phase-wait .muted { color: #5B5579; }
   background: var(--panel); border: 2px solid var(--accent); font-size: 17px; user-select: text;
 }
 .primary-chip { background: var(--accent); border-color: var(--accent); color: var(--accent-text); font-weight: 700; }
+
+.version { font-size: 14px; font-weight: 600; color: var(--muted); margin-left: 8px; letter-spacing: 0; }

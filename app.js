@@ -1,5 +1,8 @@
 'use strict';
 
+// Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
+const APP_VERSION = '8';
+
 /* ================= Vorlagen & Speicher ================= */
 
 const BUILTIN = [
@@ -659,6 +662,7 @@ window.addEventListener('keydown', (e) => {
 
 if (!FIELDS[config.mode]) config = Object.assign({}, BUILTIN[0]);
 applyTheme();
+$('appVersion').textContent = 'Version ' + APP_VERSION;
 show('setup');
 
 if ('serviceWorker' in navigator) {

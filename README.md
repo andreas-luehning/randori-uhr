@@ -13,4 +13,4 @@ Trainingsuhr fürs Tablet (PWA) für Randori, Kakari Geiko mit Rollenwechsel und
 Settings → Pages → „Deploy from a branch“ → Branch `main`, Ordner `/ (root)`.
 Danach im Chrome auf dem Tablet die Pages-Adresse öffnen und „App installieren“ wählen.
 
-Nach Änderungen die Versionsnummer `CACHE` in `sw.js` erhöhen, damit installierte Apps das Update laden.
+Nach Änderungen `APP_VERSION` in `app.js` und `CACHE` in `sw.js` erhöhen, damit installierte Apps das Update laden.
