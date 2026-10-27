@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '20';
+const APP_VERSION = '21';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -447,6 +447,7 @@ function render() {
 
   $('nextInfo').textContent = run.done ? 'Zurück zur Auswahl' : nextText(run.i + 1);
   $('btnPlus').hidden = run.done || isWait;
+  $('btnMain').hidden = isWait;
   $('btnSkip').hidden = run.done;
   $('btnStop').hidden = run.done;
   $('btnMain').innerHTML = '<span>' + (run.done ? 'Fertig' : isWait ? 'Los · Hajime' : run.paused ? 'Weiter' : 'Anhalten') + '</span>';
@@ -641,6 +642,7 @@ $('presetForm').addEventListener('submit', (e) => {
 });
 
 $('btnMain').addEventListener('click', primary);
+$('btnLos').addEventListener('click', primary);
 $('btnSkip').addEventListener('click', skip);
 $('btnPlus').addEventListener('click', plus30);
 // Beenden nur durch langes Drücken (1 s), damit es nicht aus Versehen passiert
