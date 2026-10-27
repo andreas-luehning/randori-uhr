@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '21';
+const APP_VERSION = '22';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -68,7 +68,7 @@ function describe(c) {
 
 function transitionText(c) {
   if (c.transition === 'auto') return 'dazwischen ' + fmt(c.pause) + ' Pause';
-  if (c.transition === 'wait') return 'Halt bis „Los“';
+  if (c.transition === 'wait') return 'Halt bis „Hajime“';
   return 'Pause + Warten';
 }
 
@@ -363,7 +363,7 @@ function nextText(i) {
   if (n.type === 'swap') return 'Rollenwechsel';
   if (n.type === 'wait') {
     const before = run.segs[i - 1];
-    return before && before.type === 'pause' ? 'Uhr wartet auf „Los“' : 'Partnerwechsel · Uhr wartet auf „Los“';
+    return before && before.type === 'pause' ? 'Uhr wartet auf „Hajime“' : 'Partnerwechsel · Uhr wartet auf „Hajime“';
   }
   return '';
 }
@@ -450,7 +450,7 @@ function render() {
   $('btnMain').hidden = isWait;
   $('btnSkip').hidden = run.done;
   $('btnStop').hidden = run.done;
-  $('btnMain').innerHTML = '<span>' + (run.done ? 'Fertig' : isWait ? 'Los · Hajime' : run.paused ? 'Weiter' : 'Anhalten') + '</span>';
+  $('btnMain').innerHTML = '<span>' + (run.done ? 'Fertig' : isWait ? 'Hajime' : run.paused ? 'Weiter' : 'Anhalten') + '</span>';
 
   if (isWait) renderWaitSince(); else renderTime();
   renderProgress();
@@ -488,7 +488,7 @@ function renderSetup() {
 
   const html = FIELDS[config.mode].filter((f) => !f.when || f.when(config)).map((f) => {
     if (f.type === 'transition') {
-      const hint = { auto: 'Pause zum Partnerwechsel, danach startet die nächste Runde von selbst.', wait: 'Die Uhr hält zum Partnerwechsel an, bis du auf „Los“ tippst.', pausewait: 'Pause zum Partnerwechsel, danach hält die Uhr bis „Los“.' }[config.transition];
+      const hint = { auto: 'Pause zum Partnerwechsel, danach startet die nächste Runde von selbst.', wait: 'Die Uhr hält zum Partnerwechsel an, bis du auf „Hajime“ tippst.', pausewait: 'Pause zum Partnerwechsel, danach hält die Uhr bis „Hajime“.' }[config.transition];
       return '<div class="field-col"><span class="lbl">' + 'Nach jeder Runde (Partnerwechsel)' + '</span>' +
         '<div class="seg" role="radiogroup" aria-label="Übergang">' +
         TRANSITIONS.map(([v, t]) => '<button type="button" role="radio" data-transition="' + v + '" aria-checked="' + (config.transition === v) + '">' + t + '</button>').join('') +
