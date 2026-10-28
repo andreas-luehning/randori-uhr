@@ -40,5 +40,5 @@ Ziel: Spotify läuft parallel auf demselben Tablet, beim Gong wird die Musik aut
 
 ## Branch `kanji-deko`: gesammelte Rückmeldungen (noch nicht umgesetzt)
 
-- Mate / Hajime auf dem Hauptknopf nur während der Kampfzeit. In Pause, Rollenwechsel und Vorlauf
-  ergibt das keinen Sinn, dort neutral „Anhalten / Weiter“.
+- Mate / Hajime auf dem Hauptknopf nur während der Kampfzeit. In der Pause, beim Rollenwechsel und
+  im Vorlauf („Gleich geht’s los“) ergibt das keinen Sinn, dort neutral „Anhalten / Weiter“.
