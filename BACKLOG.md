@@ -43,3 +43,4 @@ Ziel: Spotify läuft parallel auf demselben Tablet, beim Gong wird die Musik aut
 - Mate / Hajime auf dem Hauptknopf nur während der Kampfzeit. Bei „Pause · Partner wechseln“,
   beim Rollenwechsel und im Vorlauf („Gleich geht’s los“) ergibt das keinen Sinn,
   dort neutral „Anhalten / Weiter“.
+- Großer Hajime-Knopf bei „Neue Partner suchen“ bleibt so (startet wirklich die nächste Runde).
