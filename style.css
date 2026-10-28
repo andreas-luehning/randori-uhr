@@ -236,7 +236,6 @@ html[data-theme="aquarell"] body.phase-wait .muted { color: #5B5579; }
 }
 .primary-chip { background: var(--accent); border-color: var(--accent); color: var(--accent-text); font-weight: 700; }
 
-.version { font-size: 14px; font-weight: 600; color: var(--muted); margin-left: 8px; letter-spacing: 0; }
 
 .diag-out {
   flex: 1 1 100%; margin: 0; padding: 12px; border-radius: 10px; background: var(--bg);
@@ -364,7 +363,6 @@ html[data-theme="magie"] body.phase-wait .muted { color: #3E5670; }
 
 /* Logo: Stoppuhr als Gong mit Klöppel, Klöppel in der Akzentfarbe des Farbschemas */
 .bar h1 { display: flex; align-items: center; gap: 10px; }
-.bar h1 .version { align-self: flex-end; margin-bottom: 6px; }
 .logo { width: 44px; height: 44px; flex: none; }
 @media (max-width: 600px) { .logo { width: 34px; height: 34px; } }
 
@@ -402,8 +400,8 @@ html[data-theme="magie"] body.phase-wait .muted { color: #3E5670; }
 }
 .jp-deco { font-size: 0.75em; opacity: 0.55; margin-left: 0.5em; }
 .title-jp { font-size: 0.8em; color: var(--accent); margin-left: 4px; }
-.role small .jp-deco { font-size: 1.6em; opacity: 0.7; margin-left: 0.4em; }
-.los-big .jp-deco { font-size: 0.6em; margin-left: 0.4em; }
+/* Beim Partnerwechsel kräftiger: fast so präsent wie das Wort */
+.los-big .jp-deco { font-size: 0.85em; opacity: 0.9; margin-left: 0.45em; }
 
 /* Symbol „Handsender“: grau = einmal tippen, Akzentfarbe = bereit */
 .remote-state { width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center; color: var(--muted); opacity: 0.7; }
@@ -416,7 +414,6 @@ html[data-theme="magie"] body.phase-wait .muted { color: #3E5670; }
 .done-title { font-size: clamp(56px, 11vw, 130px); font-weight: 800; line-height: 1; letter-spacing: -0.01em; }
 .done-jp { font-size: clamp(22px, 3.4vw, 40px); opacity: 0.55; letter-spacing: 0.15em; }
 @media (max-height: 500px) { .done-title { font-size: 56px; } .done-jp { font-size: 20px; } }
-.role small .jp-deco { font-size: 1.9em; }
 .main span { white-space: nowrap; }
 /* Handy: wenig Platz, Kanji im Titel und auf dem Hauptknopf weglassen */
 @media (max-width: 600px) {

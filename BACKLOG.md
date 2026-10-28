@@ -38,7 +38,7 @@ Ziel: Spotify läuft parallel auf demselben Tablet, beim Gong wird die Musik aut
 - Presenter (Bluetooth, sendet Bild↑/↓) funktioniert ohne Medientasten und verträgt sich mit Spotify
 - Selfie-Stick sendet „Lauter“: in der Web-App nur über Button Mapper → Play/Pause, kollidiert mit Spotify
 
-## Branch `kanji-deko`: gesammelte Rückmeldungen (noch nicht umgesetzt)
+## Branch `kanji-deko`: gesammelte Rückmeldungen (umgesetzt in Version 24)
 
 - Mate / Hajime auf dem Hauptknopf nur während der Kampfzeit. Bei „Pause · Partner wechseln“,
   beim Rollenwechsel und im Vorlauf („Gleich geht’s los“) ergibt das keinen Sinn,

@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '23';
+const APP_VERSION = '24';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -358,7 +358,7 @@ function nextText(i) {
   const c = run.cfg;
   if (!n) return 'Ende';
   if (n.type === 'work') {
-    if (c.mode === 'kakari') return n.attacker + ' ist Tori · ' + fmt(n.dur);
+    if (c.mode === 'kakari') return 'Partner ' + n.attacker + ' ist Tori · ' + fmt(n.dur);
     return (c.mode === 'zirkel' ? 'Arbeit ' : 'Runde ' + n.round + ' · ') + fmt(n.dur);
   }
   // Bei Randori und Kakari ist die Pause zugleich die Zeit für den Partnerwechsel
@@ -432,8 +432,7 @@ function render() {
       const el = $('role' + p);
       const attacking = s.attacker === p;
       el.classList.toggle('attack', attacking);
-      const role = attacking ? 'TORI' + jp('取り') : 'UKE' + jp('受け');
-      el.querySelector('small').innerHTML = (type === 'swap' ? 'GLEICH ' : '') + role;
+      el.querySelector('small').textContent = (type === 'swap' ? 'GLEICH ' : '') + (attacking ? 'TORI' : 'UKE');
     });
   }
 
@@ -442,9 +441,11 @@ function render() {
   $('time').hidden = isWait || type === 'done';
   $('doneBox').hidden = type !== 'done';
   let label = '';
-  if (run.paused) label = 'Mate · unterbrochen';
+  // Mate / Hajime nur in der Kampfzeit; Zirkel, Pausen, Rollenwechsel und Vorlauf bleiben neutral
+  const combat = !run.done && type === 'work' && c.mode !== 'zirkel';
+  if (run.paused) label = combat ? 'Mate' : 'Angehalten';
   else if (type === 'prep') label = 'Gleich geht’s los';
-  else if (type === 'work') label = c.mode === 'zirkel' ? 'Arbeit' : c.mode === 'kakari' ? s.attacker + ' ist Tori' : 'Hajime';
+  else if (type === 'work') label = c.mode === 'zirkel' ? 'Arbeit' : c.mode === 'kakari' ? 'Partner ' + s.attacker + ' ist Tori' : 'Hajime';
   else if (type === 'pause') label = c.mode === 'zirkel' ? 'Pause' : 'Pause · Partner wechseln';
   else if (type === 'swap') label = 'Rollenwechsel';
   $('phaseLabel').textContent = label;
@@ -456,7 +457,10 @@ function render() {
   $('btnSkip').hidden = run.done;
   $('btnStop').hidden = run.done;
   // Kommandos wie auf der Matte: Mate unterbricht, Hajime geht weiter
-  $('btnMain').innerHTML = '<span>' + (run.done ? 'Fertig' : run.paused ? 'Hajime' + jp('始め') : 'Mate' + jp('待て')) + '</span>';
+  let main = run.paused ? 'Weiter' : 'Anhalten';
+  if (run.done) main = 'Fertig';
+  else if (combat) main = run.paused ? 'Hajime' + jp('始め') : 'Mate' + jp('待て');
+  $('btnMain').innerHTML = '<span>' + main + '</span>';
 
   if (isWait) renderWaitSince(); else renderTime();
   renderProgress();
