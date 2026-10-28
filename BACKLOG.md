@@ -48,3 +48,7 @@ Ziel: Spotify läuft parallel auf demselben Tablet, beim Gong wird die Musik aut
 - Kanji 始め am großen Hajime-Knopf bei „Neue Partner suchen“ wirkt zu schwach (zu blass, zu klein):
   kräftiger darstellen. Der kleine Hauptknopf unten bleibt wie er ist.
 - „Mate · unterbrochen“ ist doppelt gemoppelt: nur „Mate“.
+- Zirkel: Hauptknopf durchgehend neutral „Anhalten / Weiter“ (kein Kampf, also kein Mate / Hajime).
+- Oben „Hajime“ während der Randori-Runde bleibt so.
+- Kakari: oben „Partner A ist Tori“ statt „A ist Tori“ (ebenso in der „Danach“-Zeile).
+- Technisch: Kopfzeile auf dem Handy mit eingeschalteten Medientasten prüfen; alte Stilregeln der Versionsanzeige entfernen.
