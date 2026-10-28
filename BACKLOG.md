@@ -45,5 +45,6 @@ Ziel: Spotify läuft parallel auf demselben Tablet, beim Gong wird die Musik aut
   dort neutral „Anhalten / Weiter“.
 - Großer Hajime-Knopf bei „Neue Partner suchen“ bleibt so (startet wirklich die nächste Runde).
 - Kanji bei Tori / Uke (取り / 受け) eher wieder wegnehmen.
-- Kanji 始め am Hajime-Knopf wirkt zu schwach (zu blass, zu klein): kräftiger darstellen.
+- Kanji 始め am großen Hajime-Knopf bei „Neue Partner suchen“ wirkt zu schwach (zu blass, zu klein):
+  kräftiger darstellen. Der kleine Hauptknopf unten bleibt wie er ist.
 - „Mate · unterbrochen“ ist doppelt gemoppelt: nur „Mate“.
