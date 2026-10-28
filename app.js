@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '22';
+const APP_VERSION = '23';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -206,12 +206,15 @@ document.addEventListener('pointerdown', () => {
   if (settings.media && !mediaActive()) mediaOn();
 }, true);
 
+// Symbol oben auf der Startseite: nur sichtbar, wenn Medientasten an sind
 function updateMediaState() {
-  const el = $('appVersion');
+  const el = $('remoteState');
   if (!el) return;
-  let text = 'Version ' + APP_VERSION;
-  if (settings.media) text += mediaActive() ? ' · Handsender bereit' : ' · Handsender: einmal tippen';
-  el.textContent = text;
+  el.hidden = !settings.media;
+  const ready = mediaActive();
+  el.classList.toggle('ready', ready);
+  el.setAttribute('aria-label', ready ? 'Handsender bereit' : 'Handsender: einmal auf den Bildschirm tippen');
+  el.title = el.getAttribute('aria-label');
 }
 
 /* ================= Bildschirm wach halten ================= */
@@ -415,7 +418,8 @@ function render() {
   body.classList.add('phase-' + type);
   body.classList.toggle('paused', !!run.paused);
 
-  $('runMode').textContent = c.mode === 'kakari' ? 'Kakari Geiko' : c.mode === 'zirkel' ? 'Zirkel' : 'Randori';
+  // Kanji nur als Deko neben dem lesbaren Begriff
+  $('runMode').innerHTML = c.mode === 'kakari' ? 'Kakari Geiko' + jp('掛かり稽古') : c.mode === 'zirkel' ? 'Zirkel' : 'Randori' + jp('乱取り');
   const total = c.mode === 'kakari' ? c.partners : c.rounds;
   const word = 'Runde';
   $('runRound').textContent = run.done ? 'Fertig' : s.round ? word + ' ' + s.round + ' / ' + total : '';
@@ -428,29 +432,31 @@ function render() {
       const el = $('role' + p);
       const attacking = s.attacker === p;
       el.classList.toggle('attack', attacking);
-      el.querySelector('small').textContent = type === 'swap' ? (attacking ? 'GLEICH TORI' : 'GLEICH UKE') : (attacking ? 'TORI' : 'UKE');
+      const role = attacking ? 'TORI' + jp('取り') : 'UKE' + jp('受け');
+      el.querySelector('small').innerHTML = (type === 'swap' ? 'GLEICH ' : '') + role;
     });
   }
 
   const isWait = type === 'wait';
   $('waitBox').hidden = !isWait;
   $('time').hidden = isWait || type === 'done';
+  $('doneBox').hidden = type !== 'done';
   let label = '';
-  if (run.paused) label = 'Angehalten';
+  if (run.paused) label = 'Mate · unterbrochen';
   else if (type === 'prep') label = 'Gleich geht’s los';
   else if (type === 'work') label = c.mode === 'zirkel' ? 'Arbeit' : c.mode === 'kakari' ? s.attacker + ' ist Tori' : 'Hajime';
   else if (type === 'pause') label = c.mode === 'zirkel' ? 'Pause' : 'Pause · Partner wechseln';
   else if (type === 'swap') label = 'Rollenwechsel';
-  else if (type === 'done') label = 'Sore-made · geschafft';
   $('phaseLabel').textContent = label;
-  $('phaseLabel').hidden = isWait;
+  $('phaseLabel').hidden = isWait || type === 'done';
 
   $('nextInfo').textContent = run.done ? 'Zurück zur Auswahl' : nextText(run.i + 1);
   $('btnPlus').hidden = run.done || isWait;
   $('btnMain').hidden = isWait;
   $('btnSkip').hidden = run.done;
   $('btnStop').hidden = run.done;
-  $('btnMain').innerHTML = '<span>' + (run.done ? 'Fertig' : isWait ? 'Hajime' : run.paused ? 'Weiter' : 'Anhalten') + '</span>';
+  // Kommandos wie auf der Matte: Mate unterbricht, Hajime geht weiter
+  $('btnMain').innerHTML = '<span>' + (run.done ? 'Fertig' : run.paused ? 'Hajime' + jp('始め') : 'Mate' + jp('待て')) + '</span>';
 
   if (isWait) renderWaitSince(); else renderTime();
   renderProgress();
@@ -480,6 +486,9 @@ const FIELDS = {
 };
 
 const TRANSITIONS = [['auto', 'Auto-Pause'], ['wait', 'Warten'], ['pausewait', 'Pause + Warten']];
+
+// Japanische Schriftzeichen als dezente Verzierung (feste Texte, kein Nutzereingabe)
+function jp(text) { return '<span class="jp-deco" lang="ja">' + text + '</span>'; }
 
 function esc(t) { return String(t).replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch])); }
 
@@ -780,6 +789,7 @@ $('btnDiag').addEventListener('click', async () => {
 
 if (!FIELDS[config.mode]) config = Object.assign({}, BUILTIN[0]);
 applyTheme();
+$('appVersion').textContent = APP_VERSION;
 updateMediaState();
 updateFullscreenButton();
 show('setup');

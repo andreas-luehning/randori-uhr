@@ -393,3 +393,32 @@ html[data-theme="magie"] body.phase-wait .muted { color: #3E5670; }
   .los-big { margin-top: 10px; height: 64px; width: min(460px, 70vw); font-size: 28px; border-radius: 18px; }
   .wait-box #waitSince { margin-top: 6px; }
 }
+
+/* ---------- Japanische Schriftzeichen als Deko ---------- */
+/* Der lesbare Begriff bleibt immer die Hauptsache, das Kanji steht klein und blass daneben. */
+.jp-deco, .title-jp, .done-jp {
+  font-family: "Noto Sans CJK JP", "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+  font-weight: 700; letter-spacing: 0; text-transform: none;
+}
+.jp-deco { font-size: 0.75em; opacity: 0.55; margin-left: 0.5em; }
+.title-jp { font-size: 0.8em; color: var(--accent); margin-left: 4px; }
+.role small .jp-deco { font-size: 1.6em; opacity: 0.7; margin-left: 0.4em; }
+.los-big .jp-deco { font-size: 0.6em; margin-left: 0.4em; }
+
+/* Symbol „Handsender“: grau = einmal tippen, Akzentfarbe = bereit */
+.remote-state { width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center; color: var(--muted); opacity: 0.7; }
+.remote-state.ready { color: var(--accent); opacity: 1; }
+.remote-state svg { width: 26px; height: 26px; }
+.bar-btns { align-items: center; }
+
+/* Abschluss: kompakt in der Mitte, Begriff groß, Kanji darunter klein */
+.done-box { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.done-title { font-size: clamp(56px, 11vw, 130px); font-weight: 800; line-height: 1; letter-spacing: -0.01em; }
+.done-jp { font-size: clamp(22px, 3.4vw, 40px); opacity: 0.55; letter-spacing: 0.15em; }
+@media (max-height: 500px) { .done-title { font-size: 56px; } .done-jp { font-size: 20px; } }
+.role small .jp-deco { font-size: 1.9em; }
+.main span { white-space: nowrap; }
+/* Handy: wenig Platz, Kanji im Titel und auf dem Hauptknopf weglassen */
+@media (max-width: 600px) {
+  .run-title .jp-deco, .main .jp-deco { display: none; }
+}

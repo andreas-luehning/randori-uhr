@@ -26,9 +26,12 @@
         <path d="M30 46 L41 30" stroke="var(--accent)" stroke-width="2.8" stroke-linecap="round"/>
         <circle cx="42.5" cy="27.5" r="4" fill="var(--accent)" stroke="var(--bg)" stroke-width="1.4"/>
       </svg>
-      Randori-Uhr <small id="appVersion" class="version"></small>
+      Randori-Uhr <span class="title-jp" lang="ja">柔道</span>
     </h1>
     <span class="bar-btns">
+      <span id="remoteState" class="remote-state" role="img" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="8" r="2.2" fill="currentColor"/><path d="M10 14h4M10 17h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </span>
       <button id="btnFullscreen" class="chip" type="button">Vollbild</button>
       <button id="btnSettings" class="chip" type="button">Einstellungen</button>
     </span>
@@ -124,6 +127,10 @@
       <button id="btnDiag" class="chip" type="button">Prüfen</button>
       <pre id="diagOut" class="diag-out" hidden></pre>
     </div>
+    <div class="row">
+      <span>Version<small>Stand der App auf diesem Gerät</small></span>
+      <b id="appVersion" class="keytest"></b>
+    </div>
   </div>
 </div>
 
@@ -141,12 +148,15 @@
   <div class="run-center">
     <div id="phaseLabel" class="phase-label"></div>
     <div id="time" class="time"></div>
+    <div id="doneBox" class="done-box" hidden>
+      <span class="done-title">Sore-made</span>
+      <span class="done-jp" lang="ja">それまで</span>
+    </div>
     <div id="waitBox" class="wait-box" hidden>
       <h2>Neue Partner suchen</h2>
       <p class="wait-hint">Haben alle einen Partner? Dann hier tippen:</p>
       <button id="btnLos" class="los-big" type="button">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z" fill="currentColor"/></svg>
-        Hajime
+        Hajime<span class="jp-deco" lang="ja">始め</span>
       </button>
       <p id="waitSince" class="muted"></p>
     </div>
@@ -164,7 +174,7 @@
       <button id="btnSkip" class="ctl" type="button" aria-label="Phase überspringen">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l10 7-10 7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" fill="none"/><path d="M19 5v14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       </button>
-      <button id="btnMain" class="main" type="button">Anhalten</button>
+      <button id="btnMain" class="main" type="button">Mate</button>
     </div>
   </div>
 </div>
