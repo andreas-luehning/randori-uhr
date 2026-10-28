@@ -1,5 +1,5 @@
 // Bei jeder Änderung an den Dateien die Version erhöhen, damit Tablets das Update laden.
-const CACHE = 'randori-v24';
+const CACHE = 'randori-v25';
 const FILES = ['./', 'index.html', 'style.css', 'app.js', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-512-maskable.png'];
 
 self.addEventListener('install', (e) => {
