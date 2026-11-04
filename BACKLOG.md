@@ -65,3 +65,18 @@ danach Partnerwechsel. Keine feste Übungsform, sondern frei zusammenstellbar.
 - Ablauf für Partner A und B wiederholen (wie Rollenwechsel bei Kakari), mit Zeit für den Wechsel
 - Runden = Partnerwechsel, Übergang wie gehabt: Auto-Pause / Warten / Pause + Warten
 - Als Vorlage speichern
+
+Struktur (von klein nach groß):
+
+| Ebene | Was es ist | Beispiel |
+|---|---|---|
+| Abschnitt | Eine Übung mit Name und Dauer | Uchikomi 2:00, Boden 1:00 |
+| Durchgang | Alle Abschnitte nacheinander, kurze Pause dazwischen; optional für A und dann B | A: Uchikomi + Boden, B: dasselbe |
+| Runde | Ein Partner, danach Partnerwechsel (Auto-Pause / Warten / Pause + Warten) | 4 Runden = 4 Partner |
+| Satz (optional, Standard 1) | Mehrere Runden als Block, danach längere Satzpause | 2 Sätze à 4 Runden, 3:00 Satzpause |
+
+- Begriffe deutsch lassen (Abschnitt, Runde, Satz); kein gängiger japanischer Judo-Begriff für Runde/Satz
+- Beim Anlegen eines Abschnitts Namen zum Antippen: Uchikomi, Nagekomi, Tachi-waza, Ne-waza, Randori,
+  Kakari Geiko oder eigener Name
+- Name des Modus: „Eigene Routine“, Deko-Kanji 稽古 (Keiko)
+- Kakari ist ein Sonderfall (ein Abschnitt, für A und B); später ggf. als feste Vorlage darin aufgehen lassen
