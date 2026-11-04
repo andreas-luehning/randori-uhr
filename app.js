@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '32';
+const APP_VERSION = '33';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -74,7 +74,9 @@ function sameConfig(a, b) {
   return JSON.stringify(x) === JSON.stringify(y);
 }
 
-const DEFAULT_SETTINGS = { volume: 0.9, warn: 10, lead: 5, media: false, theme: 'klassisch' };
+const DEFAULT_SETTINGS = { volume: 0.9, warn: 10, lead: 5, media: false, theme: 'klassisch', signal: 'gong', warnType: 'piep' };
+const SIGNAL_TYPES = [['gong', 'Gong'], ['ding', 'Ding'], ['pfiff', 'Pfiff'], ['hupe', 'Hupe']];
+const WARN_TYPES = [['piep', 'Piep'], ['klopfen', 'Klopfen']];
 
 const store = {
   get(key, fallback) {
@@ -239,11 +241,72 @@ function gong(at) {
   [[1, 0.5, 2.6], [2.76, 0.28, 1.8], [5.4, 0.16, 1.2], [8.93, 0.08, 0.8]].forEach(([m, g, d]) => tone(base * m, at, d, g));
 }
 
+// Helle Glocke
+function ding(at) {
+  [[1, 0.5, 1.6], [2.0, 0.18, 1.0], [3.01, 0.1, 0.6]].forEach(([m, g, d]) => tone(880 * m, at, d, g));
+}
+
+// Trillerpfeife: hoher Ton mit schnellem Flattern
+function pfiff(at) {
+  const ac = ctx();
+  if (!ac || settings.volume <= 0) return;
+  const t0 = ac.currentTime + at;
+  const osc = ac.createOscillator();
+  const lfo = ac.createOscillator();
+  const lfoGain = ac.createGain();
+  const g = ac.createGain();
+  osc.frequency.value = 2600;
+  lfo.frequency.value = 28;
+  lfoGain.gain.value = 180;
+  lfo.connect(lfoGain).connect(osc.frequency);
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(0.35 * settings.volume, t0 + 0.02);
+  g.gain.setValueAtTime(0.35 * settings.volume, t0 + 0.45);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.55);
+  osc.connect(g).connect(ac.destination);
+  osc.start(t0); lfo.start(t0);
+  osc.stop(t0 + 0.6); lfo.stop(t0 + 0.6);
+}
+
+// Hupe / Buzzer wie in der Halle
+function hupe(at) {
+  [[349, 'sawtooth'], [440, 'sawtooth'], [523, 'square']].forEach(([f, type]) => {
+    const ac = ctx();
+    if (!ac || settings.volume <= 0) return;
+    const t0 = ac.currentTime + at;
+    const osc = ac.createOscillator();
+    const g = ac.createGain();
+    osc.type = type;
+    osc.frequency.value = f;
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(0.12 * settings.volume, t0 + 0.02);
+    g.gain.setValueAtTime(0.12 * settings.volume, t0 + 0.5);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.58);
+    osc.connect(g).connect(ac.destination);
+    osc.start(t0);
+    osc.stop(t0 + 0.62);
+  });
+}
+
+// Gewählter Signalton für Start und Ende
+function signal(at) {
+  ({ gong, ding, pfiff, hupe }[settings.signal] || gong)(at);
+}
+// Abstand zwischen den Wiederholungen (Gong klingt länger nach)
+function signalGap() { return settings.signal === 'gong' ? 0.7 : 0.75; }
+
 const sounds = {
-  start() { gong(0); },
-  end() { gong(0); gong(0.7); },
-  finish() { gong(0); gong(0.7); gong(1.4); },
-  warn() { tone(1200, 0, 0.08, 0.6, 'square'); tone(1200, 0.18, 0.08, 0.6, 'square'); },
+  start() { signal(0); },
+  end() { signal(0); signal(signalGap()); },
+  finish() { signal(0); signal(signalGap()); signal(signalGap() * 2); },
+  warn() {
+    if (settings.warnType === 'klopfen') {
+      // Holz-Klopfen: kurz und trocken
+      [0, 0.16].forEach((t) => { tone(300, t, 0.06, 0.9); tone(620, t, 0.04, 0.4, 'triangle'); });
+    } else {
+      tone(1200, 0, 0.08, 0.6, 'square'); tone(1200, 0.18, 0.08, 0.6, 'square');
+    }
+  },
   swap() { tone(660, 0, 0.18, 0.6, 'triangle'); tone(990, 0.2, 0.3, 0.6, 'triangle'); },
   tick() { tone(880, 0, 0.12, 0.45); },
 };
@@ -687,7 +750,8 @@ function renderSetup() {
         ROLES.find((r) => r[0] === c.roles)[1] + '</small></span>' +
         '<button type="button" class="chip edit-chip" data-edit="1">' +
         '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z M14 6l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>' +
-        'Ablauf bearbeiten</button></div>' +
+        'Ablauf bearbeiten</button>' +
+        '<button type="button" class="chip new-chip" data-newablauf="1">+ Neuer Ablauf</button></div>' +
         c.sections.map((x, i) => '<div class="field"><span class="lbl">' + esc(x.name) + (c.roles !== 'mutual' ? '<small>je Partner</small>' : '') + '</span><span class="stepper">' +
           '<button type="button" data-qsec="' + i + '" data-d="-1" aria-label="' + esc(x.name) + ' kürzer">−</button><output>' + fmt(x.dur) + '</output>' +
           '<button type="button" data-qsec="' + i + '" data-d="1" aria-label="' + esc(x.name) + ' länger">+</button></span></div>').join('') +
@@ -818,6 +882,8 @@ function applyTheme() {
 }
 
 function renderSettings() {
+  $('setSignal').innerHTML = SIGNAL_TYPES.map(([v, t]) => '<button type="button" role="radio" data-signaltype="' + v + '" aria-checked="' + (settings.signal === v) + '">' + t + '</button>').join('');
+  $('setWarnType').innerHTML = WARN_TYPES.map(([v, t]) => '<button type="button" role="radio" data-warntype="' + v + '" aria-checked="' + (settings.warnType === v) + '">' + t + '</button>').join('');
   $('setTheme').value = settings.theme;
   $('setVolume').value = settings.volume;
   $('setWarn').value = String(settings.warn);
@@ -831,10 +897,18 @@ function saveSettings() { store.set('settings', settings); }
 
 let draft = null; // Arbeitskopie, wird erst mit „Fertig“ übernommen
 
-function openEditor() {
+// Bearbeiten: Kopie der aktuellen Einstellungen; neu: leerer Ablauf mit den übrigen Einstellungen
+function openEditor(fresh) {
   draft = clone(config);
+  if (fresh) {
+    Object.assign(draft, { id: null, name: '', roles: 'ab', sections: [], gap: 10, swapPause: 5, signal: 0 });
+    draftIsNew = true;
+  } else {
+    draftIsNew = false;
+  }
   show('editor');
 }
+let draftIsNew = false;
 
 // Vorschau „So läuft eine Runde“
 function roundPreview(d) {
@@ -852,6 +926,9 @@ function edStepper(key, label, val, sub) {
 function renderEditor() {
   const d = draft;
   if (document.activeElement !== $('edName')) $('edName').value = d.name;
+  $('edTitle').textContent = draftIsNew ? 'Neuer Ablauf' : 'Ablauf bearbeiten';
+  $('edDone').disabled = !d.sections.length;
+  $('edEmpty').hidden = !!d.sections.length;
   $('edRoles').innerHTML = ROLES.map(([v, t]) => '<button type="button" role="radio" data-roles="' + v + '" aria-checked="' + (d.roles === v) + '">' + t + '</button>').join('');
   $('edRolesHint').textContent = {
     ab: 'Erst übt Partner A den ganzen Ablauf, dann Partner B.',
@@ -910,12 +987,14 @@ $('edCustom').addEventListener('submit', (e) => {
 });
 $('edCancel').addEventListener('click', () => { draft = null; show('setup'); });
 $('edDone').addEventListener('click', () => {
+  if (!draft.sections.length) return;
   if (!draft.name.trim()) draft.name = draft.sections.map((x) => x.name).join(' + ');
   draft.name = draft.name.trim();
   const was = config;
   config = draft;
   draft = null;
-  if (!sameConfig(was, config)) { selectedPresetId = null; editedSinceSave = true; }
+  if (draftIsNew) loadedPresetId = null; // neuer Ablauf gehört zu keiner Vorlage
+  if (draftIsNew || !sameConfig(was, config)) { selectedPresetId = null; editedSinceSave = true; }
   saveConfig();
   show('setup');
 });
@@ -959,6 +1038,10 @@ document.addEventListener('click', (e) => {
   }
   if (t.dataset.k) { stepField(t.dataset.k, Number(t.dataset.d)); return; }
   if (t.dataset.sound) { ctx(); sounds[t.dataset.sound](); return; }
+  // Signaltöne: Antippen wählt aus und spielt den Ton zur Probe
+  if (t.dataset.signaltype) { settings.signal = t.dataset.signaltype; saveSettings(); renderSettings(); ctx(); sounds.end(); return; }
+  if (t.dataset.warntype) { settings.warnType = t.dataset.warntype; saveSettings(); renderSettings(); ctx(); sounds.warn(); return; }
+  if (t.dataset.newablauf) { openEditor(true); return; }
   if (t.dataset.edit) { openEditor(); return; }
   if (current === 'editor') editorClick(t);
 });

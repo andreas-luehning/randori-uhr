@@ -87,23 +87,25 @@
       <input id="setVolume" type="range" min="0" max="1" step="0.05">
     </label>
     <div class="row">
-      <span>Signale anhören<small>So klingen die Töne im Training – zum Prüfen der Lautstärke</small></span>
+      <span>Signalton<small>für Start (1×) und Ende (2×) einer Runde · Antippen spielt ihn ab</small></span>
+      <span id="setSignal" class="seg sound-seg" role="radiogroup" aria-label="Signalton"></span>
+    </div>
+    <div class="row">
+      <span>Vorwarnung vor Rundenende<small>Antippen spielt den Klang ab</small></span>
       <span class="btns">
-        <button class="chip" type="button" data-sound="start">Start-Gong</button>
-        <button class="chip" type="button" data-sound="end">End-Gong</button>
-        <button class="chip" type="button" data-sound="warn">Vorwarnung</button>
-        <button class="chip" type="button" data-sound="swap">Wechsel</button>
+        <span id="setWarnType" class="seg sound-seg" role="radiogroup" aria-label="Klang der Vorwarnung"></span>
+        <select id="setWarn" aria-label="Zeitpunkt der Vorwarnung">
+          <option value="0">aus</option>
+          <option value="10">10 s</option>
+          <option value="15">15 s</option>
+          <option value="30">30 s</option>
+        </select>
       </span>
     </div>
-    <label class="row">
-      <span>Vorwarnung vor Rundenende</span>
-      <select id="setWarn">
-        <option value="0">aus</option>
-        <option value="10">10 s</option>
-        <option value="15">15 s</option>
-        <option value="30">30 s</option>
-      </select>
-    </label>
+    <div class="row">
+      <span>Wechselsignal<small>Rollenwechsel und Wechsel im wechselseitigen Üben</small></span>
+      <button class="chip" type="button" data-sound="swap">Anhören</button>
+    </div>
     <label class="row">
       <span>Vorlauf vor der ersten Runde</span>
       <select id="setLead">
@@ -140,7 +142,7 @@
 <!-- Ablauf bearbeiten -->
 <div id="editor" class="screen" hidden>
   <header class="bar">
-    <h1>Ablauf bearbeiten</h1>
+    <h1 id="edTitle">Ablauf bearbeiten</h1>
     <span class="bar-btns">
       <button id="edCancel" class="chip" type="button">Abbrechen</button>
       <button id="edDone" class="chip primary-chip" type="button">Fertig</button>
@@ -149,7 +151,7 @@
   <div class="ed-grid">
     <section class="ed-col">
       <label class="label" for="edName">Name</label>
-      <input id="edName" class="ed-name" maxlength="40" autocomplete="off">
+      <input id="edName" class="ed-name" maxlength="40" autocomplete="off" placeholder="z. B. Uchi-komi + Ne-waza">
       <span class="label">Rollen</span>
       <div id="edRoles" class="seg" role="radiogroup" aria-label="Rollen"></div>
       <div class="ed-preview">
@@ -161,6 +163,7 @@
     </section>
     <section class="ed-col">
       <span class="label">Abschnitte</span>
+      <p id="edEmpty" class="muted ed-empty" hidden>Noch keine Abschnitte – unten antippen oder einen eigenen Namen eingeben.</p>
       <div id="edSections" class="fields"></div>
       <span class="label">Abschnitt hinzufügen</span>
       <div id="edAdd" class="ed-pills"></div>

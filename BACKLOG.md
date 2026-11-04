@@ -130,3 +130,6 @@ Struktur (von klein nach groß):
 - Signaltöne auswählen statt nur anhören: „Signalton“ Gong / Ding (Glocke) / Pfiff / Hupe für Start und Ende
   (Start 1×, Ende 2×, Sore-made 3×); „Vorwarnung“ Klopfen / Piep / aus; Wechselsignal bleibt eigener Doppelton.
   Antippen spielt den Ton sofort ab, eigener Testbereich entfällt. Zuordnung pro Ereignis vorerst nicht.
+- (umgesetzt in Version 33) Signalton wählbar (Gong / Ding / Pfiff / Hupe), Vorwarnung Piep / Klopfen,
+  Antippen spielt zur Probe; „+ Neuer Ablauf“ im Geiko-Kasten startet mit leerem Ablauf.
+- Offen: schwebender Start-Knopf (bleibt vorerst so).
