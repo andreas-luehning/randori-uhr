@@ -52,3 +52,16 @@ Ziel: Spotify läuft parallel auf demselben Tablet, beim Gong wird die Musik aut
 - Oben „Hajime“ während der Randori-Runde bleibt so.
 - Kakari: oben „Partner A ist Tori“ statt „A ist Tori“ (ebenso in der „Danach“-Zeile).
 - Technisch: Kopfzeile auf dem Handy mit eingeschalteten Medientasten prüfen; alte Stilregeln der Versionsanzeige entfernen.
+- Oben „Hajime“ nur kurz zum Rundenbeginn (etwa so lange, wie man das Kommando ruft, 2–3 s),
+  dann ausblenden. „Mate“ oben, solange die Uhr unterbrochen ist. Knöpfe bleiben Mate / Hajime.
+
+## Neuer Modus „Eigener Ablauf“ (später, eigener Branch)
+
+Beispiel: 2:00 Uchikomi-Form, kurze Pause, 1:00 Bodentechnik – erst für Partner A, dann für Partner B,
+danach Partnerwechsel. Keine feste Übungsform, sondern frei zusammenstellbar.
+
+- Abschnitte frei anlegen: Name + Dauer (z. B. „Uchikomi 2:00“, „Boden 1:00“)
+- Kurze Pause zwischen den Abschnitten (z. B. 0:10)
+- Ablauf für Partner A und B wiederholen (wie Rollenwechsel bei Kakari), mit Zeit für den Wechsel
+- Runden = Partnerwechsel, Übergang wie gehabt: Auto-Pause / Warten / Pause + Warten
+- Als Vorlage speichern
