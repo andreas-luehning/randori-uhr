@@ -135,3 +135,7 @@ Struktur (von klein nach groß):
 - Offen: schwebender Start-Knopf (bleibt vorerst so).
 - (umgesetzt in Version 34) „+ Neu“ als Kachel bei den Vorlagen für alle Modi (Geiko: leerer Ablauf,
   Randori/Zirkel: Standardwerte); aus dem Geiko-Kasten entfernt.
+- (umgesetzt in Version 35) Start-Knopf auf dem Handy nicht mehr schwebend (Tablet bleibt schwebend);
+  „Bearbeiten“ statt „Ablauf bearbeiten“.
+- Alternative, falls die „+ Neu“-Kachel nicht intuitiv ist: „+ Neu“ öffnet kurze Auswahl, was erstellt werden soll
+  (Randori / Geiko-Ablauf / Zirkel).
