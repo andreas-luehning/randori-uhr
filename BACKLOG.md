@@ -127,3 +127,6 @@ Struktur (von klein nach groß):
   schweben, auf dem Tablet fest unten (Einstellungen enger) – oder gar nicht schweben. Entscheidung offen.
 - (umgesetzt in Version 32) „Ablauf bearbeiten“ deutlicher (Rahmen, Stift-Symbol); Tontest heißt „Signale anhören“
   mit Erklärung. Offen: im Editor „Neu beginnen“ (leerer Ablauf) als Alternative zum Abwandeln einer Vorlage?
+- Signaltöne auswählen statt nur anhören: „Signalton“ Gong / Ding (Glocke) / Pfiff / Hupe für Start und Ende
+  (Start 1×, Ende 2×, Sore-made 3×); „Vorwarnung“ Klopfen / Piep / aus; Wechselsignal bleibt eigener Doppelton.
+  Antippen spielt den Ton sofort ab, eigener Testbereich entfällt. Zuordnung pro Ereignis vorerst nicht.
