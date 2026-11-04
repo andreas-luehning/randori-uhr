@@ -113,5 +113,6 @@ Struktur (von klein nach groß):
   Geiko kann alles, was der Ablauf kann; Kakari-geiko wird fest eingebaute Kachel. Zeiten der Abschnitte und
   Runden direkt auf der Karte mit − / + änderbar, Bearbeiten-Bildschirm nur für den Aufbau.
 - Neu: Runden „offen“ (für Randori und Geiko) mit optionalem Ende um eine Uhrzeit (z. B. 21:00);
-  Anzeige „Runde 3 · bis 21:00“. Offen: bei Erreichen der Uhrzeit laufende Runde zu Ende (Vorschlag)
-  oder sofort stoppen.
+  Anzeige „Runde 3 · bis 21:00“. Entschieden: drei Möglichkeiten bei Runden – „Anzahl“, „Offen“ (bis man
+  beendet), „Bis Uhrzeit“. Bei Erreichen der Uhrzeit läuft die aktuelle Runde zu Ende, danach Sore-made
+  (Abbrechen geht jederzeit). Vorteil: kein Bedienen mehr nötig.
