@@ -99,3 +99,8 @@ Struktur (von klein nach groß):
   neutrale Texte („Pause“, „Bereit? Hajime“ statt „Neue Partner suchen“).
 - Eigene Schwachstellen: Reihenfolge der Abschnitte nicht änderbar; eigener Abschnittsname braucht zwei Schritte;
   nach „Fertig“ ist nicht klar, dass man als Vorlage speichern muss.
+- Speichern / Ändern / Benennen von Vorlagen ist zu kompliziert (vereinfachen).
+- Namensvorschläge für Abschnitte: Tachi-waza raus, Tandoku-renshu rein. Schreibweisen nach DJB
+  (Liste vom Nutzer abwarten: z. B. Uchi-komi / Nage-komi / Ne-waza / Randori / Tandoku-renshu).
+- Widerspruch Kakari-Modus und Ablauf: Vorschlag drei Reiter „Randori · Geiko 稽古 · Zirkel“;
+  Kakari Geiko 2 × 2 wird fest eingebaute Vorlage im Reiter Geiko. Name „Geiko“ oder „Übung“ offen.
