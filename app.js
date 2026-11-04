@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '38';
+const APP_VERSION = '39';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -757,7 +757,7 @@ function renderSetup() {
         '<small class="muted">' + info + '</small>' +
         '<button type="button" class="edit-row" data-edit="1">' +
         '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z M14 6l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>' +
-        'Ablauf bearbeiten<small>Abschnitte, Rollen, Pausen</small></button></div>';
+        'Ablauf bearbeiten<small>Abschnitte, Tori/Uke, Pausen</small></button></div>';
     }
     if (f.type === 'rounds') {
       const rm = config.roundsMode || 'count';
