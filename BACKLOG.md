@@ -123,3 +123,5 @@ Struktur (von klein nach groß):
   werden automatisch umgewandelt); Zeiten direkt auf der Karte; Runden Anzahl / Offen / Bis Uhrzeit;
   Partnerwechsel Ja / Nein / Nach Ansage; „Änderungen in Vorlage speichern“; Abschnitte nach oben verschieben;
   eigener Abschnittsname in einem Schritt; Start-Knopf bleibt immer sichtbar.
+- Rückmeldung zu Version 30: schwebender Start-Knopf ist neu und ungewohnt. Alternativen: nur auf dem Handy
+  schweben, auf dem Tablet fest unten (Einstellungen enger) – oder gar nicht schweben. Entscheidung offen.
