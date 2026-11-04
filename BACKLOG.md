@@ -89,3 +89,13 @@ Struktur (von klein nach groß):
 - Mock-up-Erkenntnis: Einstellungen werden eng (Start-Knopf rutscht raus) → Ablauf-Editor auf eigenen
   Bildschirm oder Teile einklappbar; Ablaufleiste auf dem Handy vereinfachen.
 - Sätze vorerst weglassen (nur für Konditionseinheiten nötig, macht die Einstellungen unübersichtlich)
+
+## Branch `ablauf`: gesammelte Rückmeldungen (noch nicht umgesetzt)
+
+- Bedienung braucht Einarbeitung; voreingestellter Ablauf sieht gut aus.
+- Eigene Vorlagen ändern: bisher nur „neu speichern + alte löschen“. Gewünscht: geladene eigene Vorlage
+  direkt aktualisieren („Änderungen in Vorlage speichern“), Löschen-× gut sichtbar.
+- Manchmal kein Partnerwechsel zwischen den Runden: Einstellung „Partnerwechsel ja/nein“; bei „nein“
+  neutrale Texte („Pause“, „Bereit? Hajime“ statt „Neue Partner suchen“).
+- Eigene Schwachstellen: Reihenfolge der Abschnitte nicht änderbar; eigener Abschnittsname braucht zwei Schritte;
+  nach „Fertig“ ist nicht klar, dass man als Vorlage speichern muss.
