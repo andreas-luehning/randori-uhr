@@ -87,8 +87,11 @@
       <input id="setVolume" type="range" min="0" max="1" step="0.05">
     </label>
     <div class="row">
-      <span>Signalton<small>für Start (1×) und Ende (2×) einer Runde · Antippen spielt ihn ab</small></span>
-      <span id="setSignal" class="seg sound-seg" role="radiogroup" aria-label="Signalton"></span>
+      <span>Signalton<small>für Start und Ende einer Runde · Antippen spielt ihn ab</small></span>
+      <span class="btns sound-col">
+        <span id="setSignal" class="seg sound-seg" role="radiogroup" aria-label="Signalton"></span>
+        <span id="setSignalCount" class="seg sound-seg" role="radiogroup" aria-label="Wie oft"></span>
+      </span>
     </div>
     <div class="row">
       <span>Vorwarnung vor Rundenende<small>Antippen spielt den Klang ab</small></span>

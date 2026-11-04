@@ -140,3 +140,4 @@ Struktur (von klein nach groß):
 - Alternative, falls die „+ Neu“-Kachel nicht intuitiv ist: „+ Neu“ öffnet kurze Auswahl, was erstellt werden soll
   (Randori / Geiko-Ablauf / Zirkel).
 - (umgesetzt in Version 36) „+ Neu“ öffnet eine Auswahl: Randori / Geiko-Ablauf / Zirkel.
+- (umgesetzt in Version 37) Signalton „Wie oft“: Start 1× · Ende 2× oder immer 1×.

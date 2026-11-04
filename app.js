@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '36';
+const APP_VERSION = '37';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -74,7 +74,8 @@ function sameConfig(a, b) {
   return JSON.stringify(x) === JSON.stringify(y);
 }
 
-const DEFAULT_SETTINGS = { volume: 0.9, warn: 10, lead: 5, media: false, theme: 'klassisch', signal: 'gong', warnType: 'piep' };
+const DEFAULT_SETTINGS = { volume: 0.9, warn: 10, lead: 5, media: false, theme: 'klassisch', signal: 'gong', warnType: 'piep', signalCount: 'multi' };
+const SIGNAL_COUNTS = [['multi', 'Start 1× · Ende 2×'], ['single', 'Immer 1×']];
 const SIGNAL_TYPES = [['gong', 'Gong'], ['ding', 'Ding'], ['pfiff', 'Pfiff'], ['hupe', 'Hupe']];
 const WARN_TYPES = [['piep', 'Piep'], ['klopfen', 'Klopfen']];
 
@@ -297,8 +298,9 @@ function signalGap() { return settings.signal === 'gong' ? 0.7 : 0.75; }
 
 const sounds = {
   start() { signal(0); },
-  end() { signal(0); signal(signalGap()); },
-  finish() { signal(0); signal(signalGap()); signal(signalGap() * 2); },
+  // Ende 2×, Sore-made 3× – außer der Signalton soll immer nur einmal klingen
+  end() { signal(0); if (settings.signalCount !== 'single') signal(signalGap()); },
+  finish() { signal(0); if (settings.signalCount !== 'single') { signal(signalGap()); signal(signalGap() * 2); } },
   warn() {
     if (settings.warnType === 'klopfen') {
       // Holz-Klopfen: kurz und trocken
@@ -883,6 +885,7 @@ function applyTheme() {
 
 function renderSettings() {
   $('setSignal').innerHTML = SIGNAL_TYPES.map(([v, t]) => '<button type="button" role="radio" data-signaltype="' + v + '" aria-checked="' + (settings.signal === v) + '">' + t + '</button>').join('');
+  $('setSignalCount').innerHTML = SIGNAL_COUNTS.map(([v, t]) => '<button type="button" role="radio" data-signalcount="' + v + '" aria-checked="' + (settings.signalCount === v) + '">' + t + '</button>').join('');
   $('setWarnType').innerHTML = WARN_TYPES.map(([v, t]) => '<button type="button" role="radio" data-warntype="' + v + '" aria-checked="' + (settings.warnType === v) + '">' + t + '</button>').join('');
   $('setTheme').value = settings.theme;
   $('setVolume').value = settings.volume;
@@ -1062,6 +1065,7 @@ document.addEventListener('click', (e) => {
   if (t.dataset.sound) { ctx(); sounds[t.dataset.sound](); return; }
   // Signaltöne: Antippen wählt aus und spielt den Ton zur Probe
   if (t.dataset.signaltype) { settings.signal = t.dataset.signaltype; saveSettings(); renderSettings(); ctx(); sounds.end(); return; }
+  if (t.dataset.signalcount) { settings.signalCount = t.dataset.signalcount; saveSettings(); renderSettings(); ctx(); sounds.end(); return; }
   if (t.dataset.warntype) { settings.warnType = t.dataset.warntype; saveSettings(); renderSettings(); ctx(); sounds.warn(); return; }
   if (t.dataset.newpreset) { openNewDialog(); return; }
   if (t.dataset.newmode) { closeNewDialog(); newPreset(t.dataset.newmode); return; }

@@ -568,3 +568,5 @@ html[data-theme] .until input { color-scheme: dark; }
 .new-option span { font-size: 14px; color: var(--muted); }
 .new-option:hover, .new-option:focus-visible { border-color: var(--accent); outline: none; }
 #newCancel { align-self: flex-end; margin-top: 4px; }
+
+.sound-col { flex-direction: column; align-items: stretch; }
