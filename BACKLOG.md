@@ -119,3 +119,7 @@ Struktur (von klein nach groß):
 - Kakari-geiko ist keine eigene Karte/kein Modus, sondern eine Vorlage: antippen lädt die Einstellungen in Geiko,
   danach direkt auf der Startseite fein justieren (Zeiten, Runden). „Bearbeiten“ nur für den Aufbau.
 - Partnerwechsel: „Ja“ / „Nein“ / „Nach Ansage“ (neutrale Texte, Trainer entscheidet mündlich).
+- (umgesetzt in Version 30) Reiter Randori · Geiko · Zirkel; Kakari-geiko ist Vorlage in Geiko (alte Kakari-Daten
+  werden automatisch umgewandelt); Zeiten direkt auf der Karte; Runden Anzahl / Offen / Bis Uhrzeit;
+  Partnerwechsel Ja / Nein / Nach Ansage; „Änderungen in Vorlage speichern“; Abschnitte nach oben verschieben;
+  eigener Abschnittsname in einem Schritt; Start-Knopf bleibt immer sichtbar.

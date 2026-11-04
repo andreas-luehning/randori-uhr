@@ -40,7 +40,8 @@
     <section class="col">
       <h2 class="label">Vorlagen</h2>
       <div id="presetList" class="preset-list"></div>
-      <button id="btnSavePreset" class="chip dashed" type="button">+ Als Vorlage speichern</button>
+      <button id="btnUpdatePreset" class="chip primary-chip" type="button" hidden></button>
+      <button id="btnSavePreset" class="chip dashed" type="button">+ Als neue Vorlage speichern</button>
       <form id="presetForm" class="preset-form" hidden>
         <input id="presetName" maxlength="40" aria-label="Name der Vorlage" autocomplete="off">
         <button class="chip primary-chip" type="submit">Speichern</button>
@@ -50,9 +51,8 @@
     <section class="panel">
       <div class="seg" role="radiogroup" aria-label="Modus">
         <button type="button" role="radio" data-mode="randori">Randori</button>
-        <button type="button" role="radio" data-mode="kakari">Kakari</button>
+        <button type="button" role="radio" data-mode="ablauf">Geiko</button>
         <button type="button" role="radio" data-mode="zirkel">Zirkel</button>
-        <button type="button" role="radio" data-mode="ablauf">Ablauf</button>
       </div>
       <div id="fields" class="fields"></div>
       <div class="spacer"></div>
@@ -162,9 +162,9 @@
       <div id="edSections" class="fields"></div>
       <span class="label">Abschnitt hinzufügen</span>
       <div id="edAdd" class="ed-pills"></div>
-      <form id="edCustom" class="preset-form" hidden>
-        <input id="edCustomName" maxlength="24" aria-label="Name des Abschnitts" autocomplete="off">
-        <button class="chip primary-chip" type="submit">Hinzufügen</button>
+      <form id="edCustom" class="preset-form">
+        <input id="edCustomName" maxlength="24" placeholder="Eigener Name" aria-label="Eigener Name für einen Abschnitt" autocomplete="off">
+        <button class="chip primary-chip" type="submit">+ Hinzufügen</button>
       </form>
     </section>
   </div>
@@ -191,8 +191,8 @@
       <span class="done-jp" lang="ja">それまで</span>
     </div>
     <div id="waitBox" class="wait-box" hidden>
-      <h2>Neue Partner suchen</h2>
-      <p class="wait-hint">Haben alle einen Partner? Dann hier tippen:</p>
+      <h2 id="waitTitle">Neue Partner suchen</h2>
+      <p id="waitHint" class="wait-hint">Haben alle einen Partner? Dann hier tippen:</p>
       <button id="btnLos" class="los-big" type="button">
         <span class="los-word">Hajime</span>
         <span class="los-jp" aria-hidden="true"><span class="los-line"></span><span lang="ja">始め</span><span class="los-line"></span></span>
