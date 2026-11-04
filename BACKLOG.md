@@ -80,7 +80,12 @@ Struktur (von klein nach groß):
   Kakari Geiko oder eigener Name
 - Name des Modus: „Eigene Routine“, Deko-Kanji 稽古 (Keiko)
 - Kakari ist ein Sonderfall (ein Abschnitt, für A und B); später ggf. als feste Vorlage darin aufgehen lassen
-- Rollen-Einstellung für den Ablauf: „A, dann B“ (wie Kakari) oder „wechselseitig / beide gleichzeitig“
-  (z. B. wechselseitiges Üben auf Zeit, Stand-Randori 2:00 + Boden-Randori 1:00). Damit sind Kakari und
-  Randori Sonderfälle; beide bleiben als schnelle Modi/Vorlagen erhalten.
+- Rollen-Einstellung mit drei Möglichkeiten (Beispiel Uchikomi 2:00 + Ne-waza 1:00):
+  1. „A komplett, dann B“: A Uchikomi → A Ne-waza → Wechsel → B Uchikomi → B Ne-waza
+  2. „Abschnittsweise“: A Uchikomi → B Uchikomi → A Ne-waza → B Ne-waza
+  3. „Wechselseitig“: Abschnitt läuft einmal, die Paare wechseln selbst ab (immer der eine, dann der andere)
+     bis die Zeit um ist; keine Tori/Uke-Anzeige. Optional (i-Tüpfelchen): Wechselsignal alle X s.
+  Kakari und Randori sind damit Sonderfälle; beide bleiben als schnelle Modi/Vorlagen erhalten.
+- Mock-up-Erkenntnis: Einstellungen werden eng (Start-Knopf rutscht raus) → Ablauf-Editor auf eigenen
+  Bildschirm oder Teile einklappbar; Ablaufleiste auf dem Handy vereinfachen.
 - Sätze vorerst weglassen (nur für Konditionseinheiten nötig, macht die Einstellungen unübersichtlich)
