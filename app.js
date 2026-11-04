@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '25';
+const APP_VERSION = '26';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -262,6 +262,7 @@ function enter(i) {
   if (!s) return finish();
   run.paused = false;
   run.lastSec = null;
+  if (s.type === 'work' && run.cfg.mode !== 'zirkel') callHajime();
   if (s.dur != null) {
     run.remaining = s.dur * 1000;
     run.endAt = Date.now() + run.remaining;
@@ -312,12 +313,22 @@ function tick() {
   renderTime();
 }
 
+// „Hajime“ oben nur kurz einblenden, so lange wie das Kommando gerufen wird
+const CALL_MS = 2600;
+function callHajime() {
+  run.callUntil = Date.now() + CALL_MS;
+  run.callNew = true;
+  clearTimeout(run.callTimer);
+  run.callTimer = setTimeout(() => { if (run) render(); }, CALL_MS + 50);
+}
+
 function togglePause() {
   const s = seg();
   if (!s || s.dur == null) return;
   if (run.paused) {
     run.paused = false;
     run.endAt = Date.now() + run.remaining;
+    if (s.type === 'work' && run.cfg.mode !== 'zirkel') callHajime();
   } else {
     run.remaining = run.endAt - Date.now();
     run.paused = true;
@@ -443,12 +454,24 @@ function render() {
   let label = '';
   // Mate / Hajime nur in der Kampfzeit; Zirkel, Pausen, Rollenwechsel und Vorlauf bleiben neutral
   const combat = !run.done && type === 'work' && c.mode !== 'zirkel';
+  const calling = combat && !run.paused && run.callUntil > Date.now();
   if (run.paused) label = combat ? 'Mate' : 'Angehalten';
+  else if (calling) label = 'Hajime';
   else if (type === 'prep') label = 'Gleich geht’s los';
-  else if (type === 'work') label = c.mode === 'zirkel' ? 'Arbeit' : c.mode === 'kakari' ? 'Partner ' + s.attacker + ' ist Tori' : 'Hajime';
+  else if (type === 'work') label = c.mode === 'zirkel' ? 'Arbeit' : c.mode === 'kakari' ? 'Partner ' + s.attacker + ' ist Tori' : '';
   else if (type === 'pause') label = c.mode === 'zirkel' ? 'Pause' : 'Pause · Partner wechseln';
   else if (type === 'swap') label = 'Rollenwechsel';
   $('phaseLabel').textContent = label;
+  const pl = $('phaseLabel');
+  if (calling && run.callNew) {
+    // Animation neu starten
+    pl.classList.remove('call');
+    void pl.offsetWidth;
+    pl.classList.add('call');
+    run.callNew = false;
+  } else if (!calling) {
+    pl.classList.remove('call');
+  }
   $('phaseLabel').hidden = isWait || type === 'done';
 
   $('nextInfo').textContent = run.done ? 'Zurück zur Auswahl' : nextText(run.i + 1);

@@ -52,7 +52,7 @@ Ziel: Spotify läuft parallel auf demselben Tablet, beim Gong wird die Musik aut
 - Oben „Hajime“ während der Randori-Runde bleibt so.
 - Kakari: oben „Partner A ist Tori“ statt „A ist Tori“ (ebenso in der „Danach“-Zeile).
 - Technisch: Kopfzeile auf dem Handy mit eingeschalteten Medientasten prüfen; alte Stilregeln der Versionsanzeige entfernen.
-- Oben „Hajime“ nur kurz zum Rundenbeginn (etwa so lange, wie man das Kommando ruft, 2–3 s),
+- (umgesetzt in Version 26) Oben „Hajime“ nur kurz zum Rundenbeginn (etwa so lange, wie man das Kommando ruft, 2–3 s),
   dann ausblenden. „Mate“ oben, solange die Uhr unterbrochen ist. Knöpfe bleiben Mate / Hajime.
 
 ## Neuer Modus „Eigener Ablauf“ (später, eigener Branch)

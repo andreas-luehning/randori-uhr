@@ -430,3 +430,15 @@ html[data-theme="magie"] body.phase-wait .muted { color: #3E5670; }
 
 @media (max-width: 600px) { .los-big { height: 92px; } }
 @media (max-height: 500px) { .los-big { height: 64px; } }
+
+/* „Hajime“ erscheint kurz mit Effekt und verschwindet wieder (Größe über transform, damit nichts springt) */
+.phase-label.call { animation: call 2.6s ease-out forwards; }
+@keyframes call {
+  0%   { opacity: 0; transform: scale(2.4); letter-spacing: 0.6em; }
+  14%  { opacity: 1; transform: scale(1.6); letter-spacing: 0.25em; }
+  70%  { opacity: 1; transform: scale(1.5); }
+  100% { opacity: 0; transform: scale(1.4); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .phase-label.call { animation: none; }
+}
