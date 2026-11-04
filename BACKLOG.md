@@ -109,3 +109,9 @@ Struktur (von klein nach groß):
   Butsukari-geiko, Randori, Bodenrandori, Ne-waza. Titel „Kakari-geiko“.
 - Idee für später: Vorlagen nach DJB-Oberbegriffen ordnen (Technikerwerbstraining, Technikanwendungstraining,
   technisches Ergänzungstraining).
+- Entscheidung: Kakari und Ablauf zusammenführen zu einem Reiter „Geiko“ (Reiter: Randori · Geiko · Zirkel).
+  Geiko kann alles, was der Ablauf kann; Kakari-geiko wird fest eingebaute Kachel. Zeiten der Abschnitte und
+  Runden direkt auf der Karte mit − / + änderbar, Bearbeiten-Bildschirm nur für den Aufbau.
+- Neu: Runden „offen“ (für Randori und Geiko) mit optionalem Ende um eine Uhrzeit (z. B. 21:00);
+  Anzeige „Runde 3 · bis 21:00“. Offen: bei Erreichen der Uhrzeit laufende Runde zu Ende (Vorschlag)
+  oder sofort stoppen.
