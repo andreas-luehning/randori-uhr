@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '26';
+const APP_VERSION = '27';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -12,12 +12,29 @@ const BUILTIN = [
   { id: 'kakari22', name: 'Kakari 2 × 2', mode: 'kakari', partners: 2, perPartner: 120, swapPause: 5, transition: 'wait', pause: 30 },
 ];
 
-// Startwerte beim Wechsel des Modus (Zirkel hat keine eigene Vorlage)
+// Startwerte beim Wechsel des Modus (Zirkel und Ablauf haben keine eigene Vorlage)
 const MODE_DEFAULTS = {
   randori: BUILTIN[0],
   kakari: BUILTIN[1],
   zirkel: { id: null, mode: 'zirkel', rounds: 10, work: 40, rest: 20 },
+  ablauf: {
+    id: null, mode: 'ablauf', name: 'Uchikomi + Boden', roles: 'ab',
+    sections: [{ name: 'Uchikomi', dur: 120 }, { name: 'Ne-waza', dur: 60 }],
+    gap: 10, swapPause: 10, signal: 0, partners: 3, transition: 'wait', pause: 30,
+  },
 };
+
+// Rollen im Ablauf: A komplett, dann B / abschnittsweise abwechseln / wechselseitig ohne feste Rollen
+const ROLES = [['ab', 'A komplett, dann B'], ['section', 'Abschnittsweise'], ['mutual', 'Wechselseitig']];
+const SIGNALS = [[0, 'Aus'], [15, '0:15'], [30, '0:30'], [60, '1:00']];
+const SECTION_NAMES = ['Uchikomi', 'Nagekomi', 'Tachi-waza', 'Ne-waza', 'Randori'];
+const MAX_SECTIONS = 8;
+
+// Tiefe Kopie, damit Abschnitte von Vorlagen nicht versehentlich mitgeändert werden
+function clone(o) { return JSON.parse(JSON.stringify(o)); }
+
+// Anzahl Runden (= Partner) je Modus
+function roundsOf(c) { return c.mode === 'kakari' || c.mode === 'ablauf' ? c.partners : c.rounds; }
 
 const DEFAULT_SETTINGS = { volume: 0.9, warn: 10, lead: 5, media: false, theme: 'klassisch' };
 
@@ -35,7 +52,7 @@ const store = {
 
 let settings = Object.assign({}, DEFAULT_SETTINGS, store.get('settings', {}));
 let customPresets = store.get('presets', []);
-let config = Object.assign({}, store.get('config', BUILTIN[0]));
+let config = clone(store.get('config', BUILTIN[0]));
 let selectedPresetId = store.get('selectedPreset', BUILTIN[0].id);
 
 /* ================= Hilfen ================= */
@@ -56,6 +73,7 @@ function mins(sec) { return sec % 60 === 0 ? String(sec / 60) : fmt(sec); }
 function shortName(c) {
   if (c.mode === 'randori') return 'Randori ' + c.rounds + ' × ' + mins(c.work);
   if (c.mode === 'kakari') return 'Kakari ' + mins(c.perPartner) + ' × ' + c.partners;
+  if (c.mode === 'ablauf') return c.name;
   return 'Zirkel ' + c.work + '/' + c.rest + ' × ' + c.rounds;
 }
 
@@ -63,6 +81,7 @@ function shortName(c) {
 function describe(c) {
   if (c.mode === 'randori') return c.rounds + ' Runden à ' + fmt(c.work) + ' · ' + transitionText(c);
   if (c.mode === 'kakari') return c.partners + ' Runden à ' + fmt(c.perPartner) + ' · je ' + fmt(c.perPartner / 2) + ' Tori';
+  if (c.mode === 'ablauf') return ROLES.find((r) => r[0] === c.roles)[1] + ' · ' + c.sections.map((x) => x.name).join(' + ') + ' · ' + c.partners + ' Runden';
   return c.rounds + ' Runden · ' + fmt(c.work) + ' Arbeit / ' + fmt(c.rest) + ' Pause';
 }
 
@@ -107,6 +126,8 @@ function buildSegments(c) {
       }
       if (p < c.partners) transition(p, c.partners);
     }
+  } else if (c.mode === 'ablauf') {
+    buildAblauf(c, segs, transition);
   } else {
     for (let r = 1; r <= c.rounds; r++) {
       segs.push({ type: 'work', dur: c.work, round: r, total: c.rounds });
@@ -114,6 +135,38 @@ function buildSegments(c) {
     }
   }
   return segs;
+}
+
+// Ablauf: Abschnitte je nach Rollen-Einstellung, kurze Pausen dazwischen, Rollenwechsel, Partnerwechsel
+function buildAblauf(c, segs, transition) {
+  const secs = c.sections;
+  // Reihenfolge der Übungsteile in einer Runde
+  let order = [];
+  if (c.roles === 'ab') {
+    ['A', 'B'].forEach((who) => secs.forEach((x, i) => order.push({ sec: x, idx: i, attacker: who })));
+  } else if (c.roles === 'section') {
+    secs.forEach((x, i) => ['A', 'B'].forEach((who) => order.push({ sec: x, idx: i, attacker: who })));
+  } else {
+    order = secs.map((x, i) => ({ sec: x, idx: i, attacker: null }));
+  }
+  const roundDur = order.reduce((a, o) => a + o.sec.dur, 0);
+  for (let p = 1; p <= c.partners; p++) {
+    let t = 0;
+    order.forEach((o, k) => {
+      const prev = order[k - 1];
+      if (prev) {
+        const roleChange = o.attacker && prev.attacker !== o.attacker;
+        const base = { round: p, total: c.partners, from: t, partDur: roundDur, attacker: o.attacker, nextName: o.sec.name };
+        if (roleChange && c.swapPause > 0) segs.push(Object.assign({ type: 'swap', dur: c.swapPause }, base));
+        else if (!roleChange && c.gap > 0) segs.push(Object.assign({ type: 'pause', dur: c.gap, gap: true }, base));
+      }
+      const swapStart = !!(prev && o.attacker && prev.attacker !== o.attacker && !(c.swapPause > 0));
+      segs.push({ type: 'work', dur: o.sec.dur, round: p, total: c.partners, attacker: o.attacker, section: o.sec.name,
+        part: k, swapStart, from: t, partDur: roundDur, signal: o.attacker ? 0 : c.signal });
+      t += o.sec.dur;
+    });
+    if (p < c.partners) transition(p, c.partners);
+  }
 }
 
 /* ================= Töne ================= */
@@ -308,6 +361,8 @@ function tick() {
     run.lastSec = sec;
     if (s.type === 'work' && settings.warn > 0 && sec === settings.warn && s.dur > settings.warn) sounds.warn();
     if (s.type !== 'work' && sec >= 1 && sec <= 3) sounds.tick();
+    // Wechselseitig: kurzes Wechselsignal im eingestellten Abstand
+    if (s.type === 'work' && s.signal > 0 && sec > 0 && sec < s.dur && (s.dur - sec) % s.signal === 0) sounds.swap();
   }
   if (run.remaining <= 0) { enter(run.i + 1); return; }
   renderTime();
@@ -368,6 +423,10 @@ function nextText(i) {
   const n = run.segs[i];
   const c = run.cfg;
   if (!n) return 'Ende';
+  if (n.type === 'work' && c.mode === 'ablauf') {
+    return n.section + (n.attacker ? ' · Partner ' + n.attacker + ' ist Tori' : ' · wechselseitig') + ' · ' + fmt(n.dur);
+  }
+  if (n.type === 'pause' && n.gap) return 'Kurze Pause ' + fmt(n.dur) + ' · dann ' + n.nextName;
   if (n.type === 'work') {
     if (c.mode === 'kakari') return 'Partner ' + n.attacker + ' ist Tori · ' + fmt(n.dur);
     return (c.mode === 'zirkel' ? 'Arbeit ' : 'Runde ' + n.round + ' · ') + fmt(n.dur);
@@ -386,6 +445,15 @@ function renderTime() {
   const s = seg();
   if (!s || s.dur == null) return;
   $('time').textContent = fmt(run.remaining / 1000);
+  const info = $('subInfo');
+  if (s.type === 'work' && s.signal > 0) {
+    const elapsed = s.dur - run.remaining / 1000;
+    const next = s.signal - (elapsed % s.signal);
+    info.hidden = next >= run.remaining / 1000;
+    info.textContent = 'Nächstes Wechselsignal in ' + fmt(next);
+  } else {
+    info.hidden = true;
+  }
   renderProgress();
 }
 
@@ -396,7 +464,7 @@ function renderWaitSince() {
 function renderProgress() {
   const s = seg();
   const c = run.cfg;
-  const total = c.mode === 'kakari' ? c.partners : c.rounds;
+  const total = roundsOf(c);
   const box = $('progress');
   if (box.children.length !== total) {
     box.innerHTML = '';
@@ -407,8 +475,8 @@ function renderProgress() {
   if (run.done) { round = total; frac = 1; }
   else if (s && s.type === 'work') {
     const elapsed = s.dur - run.remaining / 1000;
-    frac = c.mode === 'kakari' ? (s.from + elapsed) / s.partDur : elapsed / s.dur;
-  } else if (s && s.type === 'swap') {
+    frac = s.partDur ? (s.from + elapsed) / s.partDur : elapsed / s.dur;
+  } else if (s && (s.type === 'swap' || s.gap)) {
     frac = s.from / s.partDur;
   } else if (s && (s.type === 'pause' || s.type === 'wait')) {
     frac = 1;
@@ -430,12 +498,13 @@ function render() {
   body.classList.toggle('paused', !!run.paused);
 
   // Kanji nur als Deko neben dem lesbaren Begriff
-  $('runMode').innerHTML = c.mode === 'kakari' ? 'Kakari Geiko' + jp('掛かり稽古') : c.mode === 'zirkel' ? 'Zirkel' : 'Randori' + jp('乱取り');
-  const total = c.mode === 'kakari' ? c.partners : c.rounds;
+  if (c.mode === 'ablauf') $('runMode').textContent = 'Ablauf · ' + c.name;
+  else $('runMode').innerHTML = c.mode === 'kakari' ? 'Kakari Geiko' + jp('掛かり稽古') : c.mode === 'zirkel' ? 'Zirkel' : 'Randori' + jp('乱取り');
+  const total = roundsOf(c);
   const word = 'Runde';
   $('runRound').textContent = run.done ? 'Fertig' : s.round ? word + ' ' + s.round + ' / ' + total : '';
 
-  const showRoles = c.mode === 'kakari' && (type === 'work' || type === 'swap');
+  const showRoles = (c.mode === 'kakari' || c.mode === 'ablauf') && !!(s && s.attacker) && (type === 'work' || type === 'swap' || (type === 'pause' && s.gap));
   $('roles').hidden = !showRoles;
   body.classList.toggle('has-roles', showRoles);
   if (showRoles) {
@@ -446,6 +515,7 @@ function render() {
       el.querySelector('small').textContent = (type === 'swap' ? 'GLEICH ' : '') + (attacking ? 'TORI' : 'UKE');
     });
   }
+  renderStrip();
 
   const isWait = type === 'wait';
   $('waitBox').hidden = !isWait;
@@ -458,7 +528,9 @@ function render() {
   if (run.paused) label = combat ? 'Mate' : 'Angehalten';
   else if (calling) label = 'Hajime';
   else if (type === 'prep') label = 'Gleich geht’s los';
+  else if (type === 'work' && c.mode === 'ablauf') label = s.section + (s.attacker ? '' : ' · wechselseitig');
   else if (type === 'work') label = c.mode === 'zirkel' ? 'Arbeit' : c.mode === 'kakari' ? 'Partner ' + s.attacker + ' ist Tori' : '';
+  else if (type === 'pause' && s.gap) label = 'Kurze Pause · gleich ' + s.nextName;
   else if (type === 'pause') label = c.mode === 'zirkel' ? 'Pause' : 'Pause · Partner wechseln';
   else if (type === 'swap') label = 'Rollenwechsel';
   $('phaseLabel').textContent = label;
@@ -489,6 +561,21 @@ function render() {
   renderProgress();
 }
 
+// Ablaufleiste: alle Übungsteile der aktuellen Runde, der laufende hervorgehoben
+function renderStrip() {
+  const box = $('strip');
+  const c = run.cfg;
+  const s = seg();
+  if (c.mode !== 'ablauf' || run.done || !s || !s.round) { box.hidden = true; return; }
+  const parts = run.segs.filter((x) => x.type === 'work' && x.round === s.round);
+  const nextWork = s.type === 'work' ? s : run.segs.slice(run.i).find((x) => x.type === 'work' && x.round === s.round);
+  box.hidden = false;
+  box.innerHTML = parts.map((x) => {
+    const cls = x === s ? 'now' : x === nextWork ? 'next' : '';
+    return '<div class="' + cls + '" style="flex:' + x.dur + '"><small>' + (x.attacker || 'beide') + '</small>' + esc(x.section) + '</div>';
+  }).join('');
+}
+
 /* ================= Anzeige: Setup ================= */
 
 const FIELDS = {
@@ -502,6 +589,12 @@ const FIELDS = {
     { k: 'partners', label: 'Runden', type: 'count', min: 1, max: 30, sub: () => 'jede Runde mit neuem Partner' },
     { k: 'perPartner', label: 'Rundenzeit', type: 'time', step: 30, min: 30, max: 900, sub: (c) => 'je ' + fmt(c.perPartner / 2) + ' Tori, dann Rollenwechsel' },
     { k: 'swapPause', label: 'Zeit für Rollenwechsel', type: 'time', step: 1, min: 0, max: 30 },
+    { k: 'transition', type: 'transition' },
+    { k: 'pause', label: 'Pause', type: 'time', step: 5, min: 5, max: 300, when: (c) => c.transition !== 'wait' },
+  ],
+  ablauf: [
+    { type: 'ablauf' },
+    { k: 'partners', label: 'Runden', type: 'count', min: 1, max: 30, sub: () => 'jede Runde mit neuem Partner' },
     { k: 'transition', type: 'transition' },
     { k: 'pause', label: 'Pause', type: 'time', step: 5, min: 5, max: 300, when: (c) => c.transition !== 'wait' },
   ],
@@ -523,6 +616,15 @@ function renderSetup() {
   document.querySelectorAll('[data-mode]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.mode === config.mode)));
 
   const html = FIELDS[config.mode].filter((f) => !f.when || f.when(config)).map((f) => {
+    if (f.type === 'ablauf') {
+      const c = config;
+      return '<div class="ablauf-card"><div class="ablauf-head"><b>' + esc(c.name) + '</b>' +
+        '<button type="button" class="chip" data-edit="1">Bearbeiten</button></div>' +
+        '<span class="muted">' + ROLES.find((r) => r[0] === c.roles)[1] + '</span>' +
+        '<div class="ablauf-secs">' + c.sections.map((x) => '<span class="sec-pill">' + esc(x.name) + ' ' + fmt(x.dur) + '</span>').join('') + '</div>' +
+        '<small class="muted">' + (c.gap ? 'Pause zwischen Abschnitten ' + fmt(c.gap) : 'Keine Pause zwischen Abschnitten') +
+        (c.roles !== 'mutual' ? ' · Rollenwechsel ' + fmt(c.swapPause) : c.signal ? ' · Wechselsignal alle ' + fmt(c.signal) : '') + '</small></div>';
+    }
     if (f.type === 'transition') {
       const hint = { auto: 'Pause zum Partnerwechsel, danach startet die nächste Runde von selbst.', wait: 'Die Uhr hält zum Partnerwechsel an, bis du auf „Hajime“ tippst.', pausewait: 'Pause zum Partnerwechsel, danach hält die Uhr bis „Hajime“.' }[config.transition];
       return '<div class="field-col"><span class="lbl">' + 'Nach jeder Runde (Partnerwechsel)' + '</span>' +
@@ -580,11 +682,12 @@ function stepField(k, d) {
 let current = 'setup';
 function show(name) {
   current = name;
-  ['setup', 'settings', 'run'].forEach((n) => { $(n).hidden = n !== name; });
+  ['setup', 'settings', 'run', 'editor'].forEach((n) => { $(n).hidden = n !== name; });
   document.body.classList.toggle('on-setup', name === 'setup');
   if (name !== 'run') document.body.className = 'on-' + name;
   if (name === 'setup') renderSetup();
   if (name === 'settings') { renderSettings(); updateInstallUi(); }
+  if (name === 'editor') renderEditor();
 }
 
 function applyTheme() {
@@ -604,6 +707,97 @@ function renderSettings() {
 
 function saveSettings() { store.set('settings', settings); }
 
+/* ================= Ablauf bearbeiten ================= */
+
+let draft = null; // Arbeitskopie, wird erst mit „Fertig“ übernommen
+
+function openEditor() {
+  draft = clone(config);
+  show('editor');
+}
+
+// Vorschau „So läuft eine Runde“
+function roundPreview(d) {
+  const tmp = [];
+  buildAblauf(Object.assign({}, d, { partners: 1 }), tmp, () => {});
+  return tmp.filter((x) => x.type === 'work').map((x) => (x.attacker ? x.attacker + ' ' : '') + x.section);
+}
+
+function edStepper(key, label, val, sub) {
+  return '<div class="field"><span class="lbl">' + label + (sub ? '<small>' + sub + '</small>' : '') + '</span><span class="stepper">' +
+    '<button type="button" data-ed="' + key + '" data-d="-1" aria-label="' + label + ' weniger">−</button><output>' + fmt(val) + '</output>' +
+    '<button type="button" data-ed="' + key + '" data-d="1" aria-label="' + label + ' mehr">+</button></span></div>';
+}
+
+function renderEditor() {
+  const d = draft;
+  if (document.activeElement !== $('edName')) $('edName').value = d.name;
+  $('edRoles').innerHTML = ROLES.map(([v, t]) => '<button type="button" role="radio" data-roles="' + v + '" aria-checked="' + (d.roles === v) + '">' + t + '</button>').join('');
+  $('edRolesHint').textContent = {
+    ab: 'Erst übt Partner A den ganzen Ablauf, dann Partner B.',
+    section: 'Jeder Abschnitt erst für Partner A, dann für Partner B.',
+    mutual: 'Jeder Abschnitt läuft einmal, die Paare wechseln sich selbst ab.',
+  }[d.roles];
+  const prev = roundPreview(d);
+  $('edPreview').innerHTML = prev.map((p, i) => {
+    const sep = i && d.roles !== 'mutual' && p[0] !== prev[i - 1][0] ? '<span class="muted">⇄</span>' : '';
+    return sep + '<span class="sec-pill' + (p.startsWith('A ') ? ' a' : '') + '">' + esc(p) + '</span>';
+  }).join('');
+  let times = edStepper('gap', 'Pause zwischen Abschnitten', d.gap);
+  if (d.roles === 'mutual') {
+    times += '<div class="field-col"><span class="lbl">Wechselsignal<small>kurzer Ton als Erinnerung zum Tauschen</small></span><div class="seg" role="radiogroup" aria-label="Wechselsignal">' +
+      SIGNALS.map(([v, t]) => '<button type="button" role="radio" data-signal="' + v + '" aria-checked="' + (d.signal === v) + '">' + t + '</button>').join('') + '</div></div>';
+  } else {
+    times += edStepper('swapPause', 'Zeit für Rollenwechsel', d.swapPause);
+  }
+  $('edTimes').innerHTML = times;
+  $('edSections').innerHTML = d.sections.map((x, i) =>
+    '<div class="sec-row"><span class="nm">' + (i + 1) + ' · ' + esc(x.name) + '</span><span class="stepper">' +
+    '<button type="button" data-sec="' + i + '" data-d="-1" aria-label="' + esc(x.name) + ' kürzer">−</button><output>' + fmt(x.dur) + '</output>' +
+    '<button type="button" data-sec="' + i + '" data-d="1" aria-label="' + esc(x.name) + ' länger">+</button></span>' +
+    '<button type="button" class="sec-del" data-secdel="' + i + '" aria-label="' + esc(x.name) + ' entfernen"' + (d.sections.length < 2 ? ' disabled' : '') + '>×</button></div>'
+  ).join('');
+  const full = d.sections.length >= MAX_SECTIONS;
+  $('edAdd').innerHTML = SECTION_NAMES.map((n) => '<button type="button" class="chip" data-secadd="' + n + '"' + (full ? ' disabled' : '') + '>' + n + '</button>').join('') +
+    '<button type="button" class="chip dashed" data-seccustom="1"' + (full ? ' disabled' : '') + '>Eigener Name…</button>';
+}
+
+function addSection(name) {
+  if (!name || draft.sections.length >= MAX_SECTIONS) return;
+  draft.sections.push({ name: name.slice(0, 24), dur: 60 });
+  renderEditor();
+}
+
+function editorClick(t) {
+  const d = draft;
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+  if (t.dataset.roles) { d.roles = t.dataset.roles; renderEditor(); return; }
+  if (t.dataset.signal != null) { d.signal = Number(t.dataset.signal); renderEditor(); return; }
+  if (t.dataset.ed) { const k = t.dataset.ed; d[k] = clamp(d[k] + Number(t.dataset.d) * 5, 0, 60); renderEditor(); return; }
+  if (t.dataset.sec) { const x = d.sections[Number(t.dataset.sec)]; x.dur = clamp(x.dur + Number(t.dataset.d) * 15, 15, 900); renderEditor(); return; }
+  if (t.dataset.secdel) { if (d.sections.length > 1) d.sections.splice(Number(t.dataset.secdel), 1); renderEditor(); return; }
+  if (t.dataset.secadd) { addSection(t.dataset.secadd); return; }
+  if (t.dataset.seccustom) { $('edCustom').hidden = false; $('edCustomName').value = ''; $('edCustomName').focus(); }
+}
+
+$('edName').addEventListener('input', (e) => { draft.name = e.target.value.slice(0, 40); });
+$('edCustom').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const n = $('edCustomName').value.trim();
+  $('edCustom').hidden = true;
+  addSection(n);
+});
+$('edCancel').addEventListener('click', () => { draft = null; show('setup'); });
+$('edDone').addEventListener('click', () => {
+  if (!draft.name.trim()) draft.name = draft.sections.map((x) => x.name).join(' + ');
+  draft.name = draft.name.trim();
+  config = draft;
+  draft = null;
+  selectedPresetId = null;
+  saveConfig();
+  show('setup');
+});
+
 /* ================= Eingaben ================= */
 
 document.addEventListener('click', (e) => {
@@ -618,7 +812,7 @@ document.addEventListener('click', (e) => {
   }
   if (t.dataset.mode) {
     if (config.mode !== t.dataset.mode) {
-      config = Object.assign({}, MODE_DEFAULTS[t.dataset.mode]);
+      config = clone(MODE_DEFAULTS[t.dataset.mode]);
       selectedPresetId = config.id;
       saveConfig();
     }
@@ -627,12 +821,14 @@ document.addEventListener('click', (e) => {
   }
   if (t.dataset.preset) {
     const p = BUILTIN.concat(customPresets).find((x) => x.id === t.dataset.preset);
-    if (p) { config = Object.assign({}, p); selectedPresetId = p.id; saveConfig(); renderSetup(); }
+    if (p) { config = clone(p); selectedPresetId = p.id; saveConfig(); renderSetup(); }
     return;
   }
   if (t.dataset.transition) { config.transition = t.dataset.transition; selectedPresetId = null; saveConfig(); renderSetup(); return; }
   if (t.dataset.k) { stepField(t.dataset.k, Number(t.dataset.d)); return; }
   if (t.dataset.sound) { ctx(); sounds[t.dataset.sound](); return; }
+  if (t.dataset.edit) { openEditor(); return; }
+  if (current === 'editor') editorClick(t);
 });
 
 $('btnStart').addEventListener('click', startTraining);
@@ -669,7 +865,7 @@ $('presetForm').addEventListener('submit', (e) => {
   const name = $('presetName').value.trim();
   if (!name) return;
   closePresetForm();
-  const p = Object.assign({}, config, { id: 'c' + Date.now(), name: name.slice(0, 40) });
+  const p = Object.assign(clone(config), { id: 'c' + Date.now(), name: name.slice(0, 40) });
   customPresets.push(p);
   selectedPresetId = p.id;
   store.set('presets', customPresets);
@@ -814,7 +1010,8 @@ $('btnDiag').addEventListener('click', async () => {
 
 /* ================= Start ================= */
 
-if (!FIELDS[config.mode]) config = Object.assign({}, BUILTIN[0]);
+if (!FIELDS[config.mode]) config = clone(BUILTIN[0]);
+if (config.mode === 'ablauf' && !(Array.isArray(config.sections) && config.sections.length)) config = clone(MODE_DEFAULTS.ablauf);
 applyTheme();
 $('appVersion').textContent = APP_VERSION;
 updateMediaState();

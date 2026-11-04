@@ -55,7 +55,7 @@ Ziel: Spotify läuft parallel auf demselben Tablet, beim Gong wird die Musik aut
 - (umgesetzt in Version 26) Oben „Hajime“ nur kurz zum Rundenbeginn (etwa so lange, wie man das Kommando ruft, 2–3 s),
   dann ausblenden. „Mate“ oben, solange die Uhr unterbrochen ist. Knöpfe bleiben Mate / Hajime.
 
-## Neuer Modus „Eigener Ablauf“ (später, eigener Branch)
+## Neuer Modus „Ablauf“ (erste Testfassung im Branch `ablauf`, Version 27)
 
 Beispiel: 2:00 Uchikomi-Form, kurze Pause, 1:00 Bodentechnik – erst für Partner A, dann für Partner B,
 danach Partnerwechsel. Keine feste Übungsform, sondern frei zusammenstellbar.

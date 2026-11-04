@@ -442,3 +442,45 @@ html[data-theme="magie"] body.phase-wait .muted { color: #3E5670; }
 @media (prefers-reduced-motion: reduce) {
   .phase-label.call { animation: none; }
 }
+
+/* ---------- Modus „Ablauf“ ---------- */
+.ablauf-card { background: var(--bg); border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.ablauf-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ablauf-head b { font-size: 18px; overflow-wrap: anywhere; }
+.ablauf-head .chip { min-height: 44px; }
+.ablauf-secs, .ed-pills { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.sec-pill { display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px; border-radius: 16px; background: var(--panel-2); font-size: 14px; font-weight: 600; }
+.sec-pill.a { background: var(--accent); color: var(--accent-text); }
+.ed-pills .chip { min-height: 44px; }
+.ed-pills .chip:disabled { opacity: 0.4; }
+
+.ed-grid { flex: 1; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; align-content: start; }
+.ed-col { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.ed-name { min-height: 52px; padding: 0 14px; border-radius: 12px; background: var(--panel); border: 2px solid var(--line); font-size: 19px; font-weight: 700; user-select: text; }
+.ed-name:focus { border-color: var(--accent); outline: none; }
+.ed-preview { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+.sec-row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; background: var(--panel); border-radius: 12px; padding: 8px 10px; }
+.sec-row .nm { font-size: 17px; font-weight: 700; overflow-wrap: anywhere; }
+.sec-del { width: 44px; height: 44px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); font-size: 22px; }
+.sec-del:disabled { opacity: 0.3; }
+@media (max-width: 760px) { .ed-grid { grid-template-columns: 1fr; } }
+
+/* Ablaufleiste im Training */
+.strip { display: flex; gap: 4px; }
+.strip div { min-width: 0; border-radius: 8px; padding: 5px 8px; background: var(--soft); font-size: 13px; font-weight: 700; display: flex; flex-direction: column; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.strip div small { font-size: 11px; opacity: 0.75; }
+/* laufender Abschnitt: Fläche in Schriftfarbe, Schrift in der jeweiligen Hintergrundfarbe */
+.strip .now { background: currentColor; }
+body.phase-work .strip .now > * , body.phase-work .strip .now { color: var(--work-bg); }
+body.phase-work .strip .now { background: var(--work-text); }
+.strip .next { outline: 2px solid currentColor; outline-offset: -2px; }
+.sub-info { margin-top: 6px; font-size: clamp(16px, 2vw, 22px); font-weight: 700; opacity: 0.8; }
+@media (max-width: 600px) { .strip { display: none !important; } }
+@media (max-height: 500px) { .strip div { padding: 2px 6px; font-size: 11px; } .strip div small { display: none; } }
+.field-col .lbl small { display: block; font-size: 13px; color: var(--muted); }
+.strip div { font-size: 15px; padding: 6px 10px; }
+.strip div small { font-size: 12px; }
+@media (max-height: 500px) { .strip div { padding: 2px 6px; font-size: 12px; } }
+/* Lange Titel (z. B. Ablauf-Namen) kürzen, die Rundenanzeige bleibt immer ganz sichtbar */
+.run-top #runMode { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.run-top #runRound { flex: none; white-space: nowrap; }

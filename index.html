@@ -50,8 +50,9 @@
     <section class="panel">
       <div class="seg" role="radiogroup" aria-label="Modus">
         <button type="button" role="radio" data-mode="randori">Randori</button>
-        <button type="button" role="radio" data-mode="kakari">Kakari Geiko</button>
+        <button type="button" role="radio" data-mode="kakari">Kakari</button>
         <button type="button" role="radio" data-mode="zirkel">Zirkel</button>
+        <button type="button" role="radio" data-mode="ablauf">Ablauf</button>
       </div>
       <div id="fields" class="fields"></div>
       <div class="spacer"></div>
@@ -134,6 +135,41 @@
   </div>
 </div>
 
+<!-- Ablauf bearbeiten -->
+<div id="editor" class="screen" hidden>
+  <header class="bar">
+    <h1>Ablauf bearbeiten</h1>
+    <span class="bar-btns">
+      <button id="edCancel" class="chip" type="button">Abbrechen</button>
+      <button id="edDone" class="chip primary-chip" type="button">Fertig</button>
+    </span>
+  </header>
+  <div class="ed-grid">
+    <section class="ed-col">
+      <label class="label" for="edName">Name</label>
+      <input id="edName" class="ed-name" maxlength="40" autocomplete="off">
+      <span class="label">Rollen</span>
+      <div id="edRoles" class="seg" role="radiogroup" aria-label="Rollen"></div>
+      <div class="ed-preview">
+        <small id="edRolesHint"></small>
+        <small class="muted">So läuft eine Runde:</small>
+        <div id="edPreview" class="ed-pills"></div>
+      </div>
+      <div id="edTimes" class="fields"></div>
+    </section>
+    <section class="ed-col">
+      <span class="label">Abschnitte</span>
+      <div id="edSections" class="fields"></div>
+      <span class="label">Abschnitt hinzufügen</span>
+      <div id="edAdd" class="ed-pills"></div>
+      <form id="edCustom" class="preset-form" hidden>
+        <input id="edCustomName" maxlength="24" aria-label="Name des Abschnitts" autocomplete="off">
+        <button class="chip primary-chip" type="submit">Hinzufügen</button>
+      </form>
+    </section>
+  </div>
+</div>
+
 <!-- Laufende Uhr -->
 <div id="run" class="screen" hidden>
   <div class="run-top">
@@ -141,6 +177,7 @@
     <span id="runRound" class="run-title"></span>
   </div>
   <div id="progress" class="progress"></div>
+  <div id="strip" class="strip" hidden></div>
   <div id="roles" class="roles" hidden>
     <div id="roleA" class="role"><small></small><b>Partner A</b></div>
     <div id="roleB" class="role"><small></small><b>Partner B</b></div>
@@ -148,6 +185,7 @@
   <div class="run-center">
     <div id="phaseLabel" class="phase-label"></div>
     <div id="time" class="time"></div>
+    <div id="subInfo" class="sub-info" hidden></div>
     <div id="doneBox" class="done-box" hidden>
       <span class="done-title">Sore-made</span>
       <span class="done-jp" lang="ja">それまで</span>
