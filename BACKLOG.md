@@ -116,3 +116,6 @@ Struktur (von klein nach groß):
   Anzeige „Runde 3 · bis 21:00“. Entschieden: drei Möglichkeiten bei Runden – „Anzahl“, „Offen“ (bis man
   beendet), „Bis Uhrzeit“. Bei Erreichen der Uhrzeit läuft die aktuelle Runde zu Ende, danach Sore-made
   (Abbrechen geht jederzeit). Vorteil: kein Bedienen mehr nötig.
+- Kakari-geiko ist keine eigene Karte/kein Modus, sondern eine Vorlage: antippen lädt die Einstellungen in Geiko,
+  danach direkt auf der Startseite fein justieren (Zeiten, Runden). „Bearbeiten“ nur für den Aufbau.
+- Partnerwechsel: „Ja“ / „Nein“ / „Nach Ansage“ (neutrale Texte, Trainer entscheidet mündlich).
