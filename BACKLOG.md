@@ -141,3 +141,15 @@ Struktur (von klein nach groß):
   (Randori / Geiko-Ablauf / Zirkel).
 - (umgesetzt in Version 36) „+ Neu“ öffnet eine Auswahl: Randori / Geiko-Ablauf / Zirkel.
 - (umgesetzt in Version 37) Signalton „Wie oft“: Start 1× · Ende 2× oder immer 1×.
+- (umgesetzt in Version 38) „Ablauf bearbeiten“ als eigene, breite Zeile unten im Geiko-Kasten.
+
+## Veröffentlichung im Google Play Store (Idee)
+
+- Weg A: PWA als „Trusted Web Activity“ verpacken (z. B. mit PWABuilder/Bubblewrap). Die App zeigt die Seite von
+  GitHub Pages; Updates kommen weiter automatisch. Braucht eine Digital-Asset-Links-Datei unter
+  /.well-known/assetlinks.json der Domain (bei GitHub Pages nur mit eigenem Repo andreas-luehning.github.io
+  oder eigener Domain möglich).
+- Weg B: eigene Android-App-Hülle (WebView/Capacitor) – nötig für echtes Ducking und Lautstärketasten.
+- Voraussetzungen Play Store: Entwicklerkonto (einmalige Gebühr, Identitätsprüfung), Datenschutzerklärung,
+  Altersfreigabe-Fragebogen, Angaben zur Datensicherheit, Store-Texte und Screenshots; bei neuen privaten
+  Konten ein geschlossener Test mit Testern vor der Veröffentlichung (aktuelle Regeln vorher prüfen).

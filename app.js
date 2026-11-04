@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '37';
+const APP_VERSION = '38';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -748,15 +748,16 @@ function renderSetup() {
       const info = (c.sections.length > 1 && c.gap ? 'Pause zwischen Abschnitten ' + fmt(c.gap) + ' · ' : '') +
         (c.roles !== 'mutual' ? 'Rollenwechsel ' + fmt(c.swapPause) : c.signal ? 'Wechselsignal alle ' + fmt(c.signal) : 'ohne Wechselsignal');
       // Zeiten direkt hier einstellbar; „Bearbeiten“ nur für den Aufbau
+      // Aufbau: Name und Rollen oben, Zeiten in der Mitte, „Ablauf bearbeiten“ als eigene Zeile unten
       return '<div class="ablauf-card"><div class="ablauf-head"><span><b>' + esc(c.name) + '</b><small class="muted">' +
-        ROLES.find((r) => r[0] === c.roles)[1] + '</small></span>' +
-        '<button type="button" class="chip edit-chip" data-edit="1">' +
-        '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z M14 6l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>' +
-        'Bearbeiten</button></div>' +
+        ROLES.find((r) => r[0] === c.roles)[1] + '</small></span></div>' +
         c.sections.map((x, i) => '<div class="field"><span class="lbl">' + esc(x.name) + (c.roles !== 'mutual' ? '<small>je Partner</small>' : '') + '</span><span class="stepper">' +
           '<button type="button" data-qsec="' + i + '" data-d="-1" aria-label="' + esc(x.name) + ' kürzer">−</button><output>' + fmt(x.dur) + '</output>' +
           '<button type="button" data-qsec="' + i + '" data-d="1" aria-label="' + esc(x.name) + ' länger">+</button></span></div>').join('') +
-        '<small class="muted">' + info + '</small></div>';
+        '<small class="muted">' + info + '</small>' +
+        '<button type="button" class="edit-row" data-edit="1">' +
+        '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z M14 6l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>' +
+        'Ablauf bearbeiten<small>Abschnitte, Rollen, Pausen</small></button></div>';
     }
     if (f.type === 'rounds') {
       const rm = config.roundsMode || 'count';

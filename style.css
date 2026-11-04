@@ -570,3 +570,12 @@ html[data-theme] .until input { color-scheme: dark; }
 #newCancel { align-self: flex-end; margin-top: 4px; }
 
 .sound-col { flex-direction: column; align-items: stretch; }
+
+/* „Ablauf bearbeiten“ als eigene Zeile unten im Geiko-Kasten */
+.edit-row {
+  margin-top: 4px; width: 100%; min-height: 52px; border: 2px solid var(--accent); border-radius: 12px;
+  background: transparent; color: var(--text); font-size: 16px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+}
+.edit-row svg { width: 20px; height: 20px; flex: none; }
+.edit-row small { font-weight: 500; font-size: 13px; color: var(--muted); }
