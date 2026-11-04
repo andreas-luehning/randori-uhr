@@ -516,3 +516,12 @@ html[data-theme] .until input { color-scheme: dark; }
   .setup-grid { overflow: visible; }
   #btnStart { bottom: max(12px, env(safe-area-inset-bottom)); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35); }
 }
+
+/* Vorlagen-Knöpfe nebeneinander, nur so breit wie ihr Text */
+.preset-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.preset-actions .chip { align-self: auto; }
+.preset .badge {
+  align-self: flex-start; font-style: normal; font-size: 12px; font-weight: 700; letter-spacing: 0.04em;
+  padding: 3px 8px; border-radius: 8px; background: var(--accent); color: var(--accent-text);
+}
+.preset b, .preset span { overflow-wrap: anywhere; min-width: 0; }

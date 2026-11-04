@@ -40,8 +40,10 @@
     <section class="col">
       <h2 class="label">Vorlagen</h2>
       <div id="presetList" class="preset-list"></div>
-      <button id="btnUpdatePreset" class="chip primary-chip" type="button" hidden></button>
-      <button id="btnSavePreset" class="chip dashed" type="button">+ Als neue Vorlage speichern</button>
+      <div class="preset-actions">
+        <button id="btnUpdatePreset" class="chip primary-chip" type="button" hidden>Änderungen speichern</button>
+        <button id="btnSavePreset" class="chip dashed" type="button">+ Als neue Vorlage speichern</button>
+      </div>
       <form id="presetForm" class="preset-form" hidden>
         <input id="presetName" maxlength="40" aria-label="Name der Vorlage" autocomplete="off">
         <button class="chip primary-chip" type="submit">Speichern</button>

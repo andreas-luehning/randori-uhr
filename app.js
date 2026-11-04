@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '30';
+const APP_VERSION = '31';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -732,9 +732,10 @@ function renderSetup() {
 
   // Geladene eigene Vorlage geändert? Dann direkt aktualisieren können
   const loaded = customPresets.find((p) => p.id === loadedPresetId);
+  const dirty = !!(loaded && !sameConfig(loaded, config));
   const upd = $('btnUpdatePreset');
-  upd.hidden = !(loaded && !sameConfig(loaded, config));
-  if (loaded) upd.textContent = 'Änderungen in „' + loaded.name + '“ speichern';
+  upd.hidden = !dirty;
+  if (loaded) upd.setAttribute('aria-label', 'Änderungen in Vorlage „' + loaded.name + '“ speichern');
   $('btnSavePreset').classList.toggle('attention', editedSinceSave);
 
   const all_presets = BUILTIN.concat(customPresets);
@@ -742,6 +743,7 @@ function renderSetup() {
     const custom = !BUILTIN.includes(p);
     return '<button type="button" class="preset" data-preset="' + esc(p.id) + '" aria-pressed="' + (p.id === selectedPresetId) + '">' +
       '<b>' + esc(p.name) + '</b><span>' + esc(describe(p)) + '</span>' +
+      (dirty && p.id === loadedPresetId ? '<em class="badge">geändert</em>' : '') +
       (custom ? '<span class="del" role="button" tabindex="0" data-del="' + esc(p.id) + '" aria-label="Vorlage löschen">×</span>' : '') +
       '</button>';
   }).join('');
