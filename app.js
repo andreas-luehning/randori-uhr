@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '33';
+const APP_VERSION = '34';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -750,8 +750,7 @@ function renderSetup() {
         ROLES.find((r) => r[0] === c.roles)[1] + '</small></span>' +
         '<button type="button" class="chip edit-chip" data-edit="1">' +
         '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z M14 6l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>' +
-        'Ablauf bearbeiten</button>' +
-        '<button type="button" class="chip new-chip" data-newablauf="1">+ Neuer Ablauf</button></div>' +
+        'Ablauf bearbeiten</button></div>' +
         c.sections.map((x, i) => '<div class="field"><span class="lbl">' + esc(x.name) + (c.roles !== 'mutual' ? '<small>je Partner</small>' : '') + '</span><span class="stepper">' +
           '<button type="button" data-qsec="' + i + '" data-d="-1" aria-label="' + esc(x.name) + ' kürzer">−</button><output>' + fmt(x.dur) + '</output>' +
           '<button type="button" data-qsec="' + i + '" data-d="1" aria-label="' + esc(x.name) + ' länger">+</button></span></div>').join('') +
@@ -805,7 +804,9 @@ function renderSetup() {
   $('btnSavePreset').classList.toggle('attention', editedSinceSave);
 
   const all_presets = BUILTIN.concat(customPresets);
-  $('presetList').innerHTML = all_presets.map((p) => {
+  const newHint = { ablauf: 'Leeren Geiko-Ablauf anlegen', randori: 'Randori mit Standardwerten', zirkel: 'Zirkel mit Standardwerten' }[config.mode];
+  $('presetList').innerHTML = '<button type="button" class="preset preset-new" data-newpreset="1"><b>+ Neu</b><span>' + newHint + '</span></button>' +
+    all_presets.map((p) => {
     const custom = !BUILTIN.includes(p);
     return '<button type="button" class="preset" data-preset="' + esc(p.id) + '" aria-pressed="' + (p.id === selectedPresetId) + '">' +
       '<b>' + esc(p.name) + '</b><span>' + esc(describe(p)) + '</span>' +
@@ -896,6 +897,15 @@ function saveSettings() { store.set('settings', settings); }
 /* ================= Ablauf bearbeiten ================= */
 
 let draft = null; // Arbeitskopie, wird erst mit „Fertig“ übernommen
+
+// „+ Neu“ bei den Vorlagen: Geiko öffnet einen leeren Ablauf, sonst Standardwerte ohne Bezug zu einer Vorlage
+function newPreset() {
+  if (config.mode === 'ablauf') { openEditor(true); return; }
+  config = normalize(Object.assign(clone(MODE_DEFAULTS[config.mode]), { id: null, name: '' }));
+  loadedPresetId = null;
+  editedSinceSave = true;
+  changed();
+}
 
 // Bearbeiten: Kopie der aktuellen Einstellungen; neu: leerer Ablauf mit den übrigen Einstellungen
 function openEditor(fresh) {
@@ -1041,7 +1051,7 @@ document.addEventListener('click', (e) => {
   // Signaltöne: Antippen wählt aus und spielt den Ton zur Probe
   if (t.dataset.signaltype) { settings.signal = t.dataset.signaltype; saveSettings(); renderSettings(); ctx(); sounds.end(); return; }
   if (t.dataset.warntype) { settings.warnType = t.dataset.warntype; saveSettings(); renderSettings(); ctx(); sounds.warn(); return; }
-  if (t.dataset.newablauf) { openEditor(true); return; }
+  if (t.dataset.newpreset) { newPreset(); return; }
   if (t.dataset.edit) { openEditor(); return; }
   if (current === 'editor') editorClick(t);
 });

@@ -545,3 +545,7 @@ html[data-theme] .until input { color-scheme: dark; }
   .ablauf-head .new-chip { width: 100%; justify-content: center; }
   .sound-seg { grid-auto-columns: 1fr; width: 100%; }
 }
+
+/* Kachel „+ Neu“ bei den Vorlagen */
+.preset.preset-new { border-style: dashed; background: transparent; }
+.preset.preset-new b { color: var(--accent); }

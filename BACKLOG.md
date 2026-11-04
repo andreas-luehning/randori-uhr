@@ -133,3 +133,5 @@ Struktur (von klein nach groß):
 - (umgesetzt in Version 33) Signalton wählbar (Gong / Ding / Pfiff / Hupe), Vorwarnung Piep / Klopfen,
   Antippen spielt zur Probe; „+ Neuer Ablauf“ im Geiko-Kasten startet mit leerem Ablauf.
 - Offen: schwebender Start-Knopf (bleibt vorerst so).
+- (umgesetzt in Version 34) „+ Neu“ als Kachel bei den Vorlagen für alle Modi (Geiko: leerer Ablauf,
+  Randori/Zirkel: Standardwerte); aus dem Geiko-Kasten entfernt.
