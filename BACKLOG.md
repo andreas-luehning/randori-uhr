@@ -80,3 +80,7 @@ Struktur (von klein nach groß):
   Kakari Geiko oder eigener Name
 - Name des Modus: „Eigene Routine“, Deko-Kanji 稽古 (Keiko)
 - Kakari ist ein Sonderfall (ein Abschnitt, für A und B); später ggf. als feste Vorlage darin aufgehen lassen
+- Rollen-Einstellung für den Ablauf: „A, dann B“ (wie Kakari) oder „wechselseitig / beide gleichzeitig“
+  (z. B. wechselseitiges Üben auf Zeit, Stand-Randori 2:00 + Boden-Randori 1:00). Damit sind Kakari und
+  Randori Sonderfälle; beide bleiben als schnelle Modi/Vorlagen erhalten.
+- Sätze vorerst weglassen (nur für Konditionseinheiten nötig, macht die Einstellungen unübersichtlich)
