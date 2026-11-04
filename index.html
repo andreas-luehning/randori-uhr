@@ -139,6 +139,17 @@
   </div>
 </div>
 
+<!-- Auswahl „+ Neu“ -->
+<div id="newDialog" class="dialog" hidden>
+  <div class="dialog-box" role="dialog" aria-modal="true" aria-labelledby="newTitle">
+    <h2 id="newTitle">Was möchtest du neu anlegen?</h2>
+    <button type="button" class="new-option" data-newmode="randori"><b>Randori</b><span>Rundenzeit, Runden, Pausen – mit Standardwerten beginnen</span></button>
+    <button type="button" class="new-option" data-newmode="ablauf"><b>Geiko-Ablauf</b><span>Eigene Abschnitte, z. B. Uchi-komi + Ne-waza, mit Rollenwechsel</span></button>
+    <button type="button" class="new-option" data-newmode="zirkel"><b>Zirkel</b><span>Arbeit und Pause im Wechsel</span></button>
+    <button id="newCancel" type="button" class="chip">Abbrechen</button>
+  </div>
+</div>
+
 <!-- Ablauf bearbeiten -->
 <div id="editor" class="screen" hidden>
   <header class="bar">

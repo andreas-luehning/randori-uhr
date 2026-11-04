@@ -558,3 +558,13 @@ html[data-theme] .until input { color-scheme: dark; }
   .ablauf-head { flex-wrap: nowrap; align-items: flex-start; }
   .ablauf-head .edit-chip { width: auto; }
 }
+
+/* Auswahlfenster „+ Neu“ */
+.dialog { position: fixed; inset: 0; z-index: 20; background: rgba(0, 0, 0, 0.55); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.dialog-box { width: min(520px, 100%); background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 22px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4); }
+.dialog-box h2 { margin: 0 0 6px; font-size: 22px; }
+.new-option { text-align: left; border: 2px solid var(--line); background: var(--bg); border-radius: 14px; padding: 14px 16px; min-height: 64px; display: flex; flex-direction: column; gap: 4px; }
+.new-option b { font-size: 19px; }
+.new-option span { font-size: 14px; color: var(--muted); }
+.new-option:hover, .new-option:focus-visible { border-color: var(--accent); outline: none; }
+#newCancel { align-self: flex-end; margin-top: 4px; }

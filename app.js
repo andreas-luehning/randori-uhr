@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '35';
+const APP_VERSION = '36';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -804,8 +804,7 @@ function renderSetup() {
   $('btnSavePreset').classList.toggle('attention', editedSinceSave);
 
   const all_presets = BUILTIN.concat(customPresets);
-  const newHint = { ablauf: 'Leeren Geiko-Ablauf anlegen', randori: 'Randori mit Standardwerten', zirkel: 'Zirkel mit Standardwerten' }[config.mode];
-  $('presetList').innerHTML = '<button type="button" class="preset preset-new" data-newpreset="1"><b>+ Neu</b><span>' + newHint + '</span></button>' +
+  $('presetList').innerHTML = '<button type="button" class="preset preset-new" data-newpreset="1"><b>+ Neu</b><span>Randori, Geiko-Ablauf oder Zirkel</span></button>' +
     all_presets.map((p) => {
     const custom = !BUILTIN.includes(p);
     return '<button type="button" class="preset" data-preset="' + esc(p.id) + '" aria-pressed="' + (p.id === selectedPresetId) + '">' +
@@ -898,10 +897,23 @@ function saveSettings() { store.set('settings', settings); }
 
 let draft = null; // Arbeitskopie, wird erst mit „Fertig“ übernommen
 
-// „+ Neu“ bei den Vorlagen: Geiko öffnet einen leeren Ablauf, sonst Standardwerte ohne Bezug zu einer Vorlage
-function newPreset() {
-  if (config.mode === 'ablauf') { openEditor(true); return; }
-  config = normalize(Object.assign(clone(MODE_DEFAULTS[config.mode]), { id: null, name: '' }));
+// „+ Neu“ bei den Vorlagen: erst fragen, was angelegt werden soll
+function openNewDialog() {
+  $('newDialog').hidden = false;
+  document.querySelector('[data-newmode="' + config.mode + '"]').focus();
+}
+function closeNewDialog() { $('newDialog').hidden = true; }
+$('newCancel').addEventListener('click', closeNewDialog);
+$('newDialog').addEventListener('click', (e) => { if (e.target === $('newDialog')) closeNewDialog(); });
+
+// Geiko öffnet einen leeren Ablauf, Randori und Zirkel beginnen mit Standardwerten ohne Bezug zu einer Vorlage
+function newPreset(mode) {
+  if (mode === 'ablauf') {
+    if (config.mode !== 'ablauf') config = normalize(MODE_DEFAULTS.ablauf);
+    openEditor(true);
+    return;
+  }
+  config = normalize(Object.assign(clone(MODE_DEFAULTS[mode]), { id: null, name: '' }));
   loadedPresetId = null;
   editedSinceSave = true;
   changed();
@@ -1051,7 +1063,8 @@ document.addEventListener('click', (e) => {
   // Signaltöne: Antippen wählt aus und spielt den Ton zur Probe
   if (t.dataset.signaltype) { settings.signal = t.dataset.signaltype; saveSettings(); renderSettings(); ctx(); sounds.end(); return; }
   if (t.dataset.warntype) { settings.warnType = t.dataset.warntype; saveSettings(); renderSettings(); ctx(); sounds.warn(); return; }
-  if (t.dataset.newpreset) { newPreset(); return; }
+  if (t.dataset.newpreset) { openNewDialog(); return; }
+  if (t.dataset.newmode) { closeNewDialog(); newPreset(t.dataset.newmode); return; }
   if (t.dataset.edit) { openEditor(); return; }
   if (current === 'editor') editorClick(t);
 });
@@ -1160,6 +1173,8 @@ function showKey(text) { const el = $('keyTest'); if (el) el.textContent = text;
 
 window.addEventListener('keydown', (e) => {
   if (e.target.closest && e.target.closest('input, select, textarea')) return;
+  // Offenes Auswahlfenster: Escape schließt, sonst keine Uhr-Tasten
+  if (!$('newDialog').hidden) { if (e.key === 'Escape') closeNewDialog(); return; }
   showKey(e.key === ' ' ? 'Leertaste' : e.key);
   if (current === 'settings') return;
   if (PRIMARY_KEYS.includes(e.key)) {
