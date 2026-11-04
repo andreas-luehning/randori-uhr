@@ -104,3 +104,8 @@ Struktur (von klein nach groß):
   (Liste vom Nutzer abwarten: z. B. Uchi-komi / Nage-komi / Ne-waza / Randori / Tandoku-renshu).
 - Widerspruch Kakari-Modus und Ablauf: Vorschlag drei Reiter „Randori · Geiko 稽古 · Zirkel“;
   Kakari Geiko 2 × 2 wird fest eingebaute Vorlage im Reiter Geiko. Name „Geiko“ oder „Übung“ offen.
+- (umgesetzt in Version 29) Schreibweisen nach DJB: erster Bestandteil groß, Rest klein, Bindestrich.
+  Abschnitts-Vorschläge: Tandoku-renshu, Ukemi, Uchi-komi, Nage-komi, Yakusoku-geiko, Kakari-geiko,
+  Butsukari-geiko, Randori, Bodenrandori, Ne-waza. Titel „Kakari-geiko“.
+- Idee für später: Vorlagen nach DJB-Oberbegriffen ordnen (Technikerwerbstraining, Technikanwendungstraining,
+  technisches Ergänzungstraining).

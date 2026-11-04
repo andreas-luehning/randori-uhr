@@ -1,6 +1,6 @@
 # Randori-Uhr
 
-Trainingsuhr fürs Tablet (PWA) für Randori, Kakari Geiko mit Rollenwechsel und Zirkeltraining.
+Trainingsuhr fürs Tablet (PWA) für Randori, Kakari-geiko mit Rollenwechsel, eigene Abläufe und Zirkeltraining.
 
 - Übergänge zwischen den Runden: Auto-Pause, Warten auf „Los“ oder Pause + Warten
 - Gongs, Vorwarnung, eigener Wechselton

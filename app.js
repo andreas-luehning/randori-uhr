@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '28';
+const APP_VERSION = '29';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -18,8 +18,8 @@ const MODE_DEFAULTS = {
   kakari: BUILTIN[1],
   zirkel: { id: null, mode: 'zirkel', rounds: 10, work: 40, rest: 20 },
   ablauf: {
-    id: null, mode: 'ablauf', name: 'Uchikomi + Boden', roles: 'ab',
-    sections: [{ name: 'Uchikomi', dur: 120 }, { name: 'Ne-waza', dur: 60 }],
+    id: null, mode: 'ablauf', name: 'Uchi-komi + Ne-waza', roles: 'ab',
+    sections: [{ name: 'Uchi-komi', dur: 120 }, { name: 'Ne-waza', dur: 60 }],
     gap: 10, swapPause: 10, signal: 0, partners: 3, transition: 'wait', pause: 30,
   },
 };
@@ -27,7 +27,8 @@ const MODE_DEFAULTS = {
 // Rollen im Ablauf: A komplett, dann B / abschnittsweise abwechseln / wechselseitig ohne feste Rollen
 const ROLES = [['ab', 'A komplett, dann B'], ['section', 'Abschnittsweise'], ['mutual', 'Wechselseitig']];
 const SIGNALS = [[0, 'Aus'], [15, '0:15'], [30, '0:30'], [60, '1:00']];
-const SECTION_NAMES = ['Uchikomi', 'Nagekomi', 'Tachi-waza', 'Ne-waza', 'Randori'];
+// Übungsformen in DJB-Schreibweise: erster Bestandteil groß, Rest klein, mit Bindestrich
+const SECTION_NAMES = ['Tandoku-renshu', 'Ukemi', 'Uchi-komi', 'Nage-komi', 'Yakusoku-geiko', 'Kakari-geiko', 'Butsukari-geiko', 'Randori', 'Bodenrandori', 'Ne-waza'];
 const MAX_SECTIONS = 8;
 
 // Tiefe Kopie, damit Abschnitte von Vorlagen nicht versehentlich mitgeändert werden
@@ -499,7 +500,7 @@ function render() {
 
   // Kanji nur als Deko neben dem lesbaren Begriff
   if (c.mode === 'ablauf') $('runMode').textContent = 'Ablauf · ' + c.name;
-  else $('runMode').innerHTML = c.mode === 'kakari' ? 'Kakari Geiko' + jp('掛かり稽古') : c.mode === 'zirkel' ? 'Zirkel' : 'Randori' + jp('乱取り');
+  else $('runMode').innerHTML = c.mode === 'kakari' ? 'Kakari-geiko' + jp('掛かり稽古') : c.mode === 'zirkel' ? 'Zirkel' : 'Randori' + jp('乱取り');
   const total = roundsOf(c);
   const word = 'Runde';
   $('runRound').textContent = run.done ? 'Fertig' : s.round ? word + ' ' + s.round + ' / ' + total : '';
