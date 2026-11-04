@@ -125,3 +125,5 @@ Struktur (von klein nach groß):
   eigener Abschnittsname in einem Schritt; Start-Knopf bleibt immer sichtbar.
 - Rückmeldung zu Version 30: schwebender Start-Knopf ist neu und ungewohnt. Alternativen: nur auf dem Handy
   schweben, auf dem Tablet fest unten (Einstellungen enger) – oder gar nicht schweben. Entscheidung offen.
+- (umgesetzt in Version 32) „Ablauf bearbeiten“ deutlicher (Rahmen, Stift-Symbol); Tontest heißt „Signale anhören“
+  mit Erklärung. Offen: im Editor „Neu beginnen“ (leerer Ablauf) als Alternative zum Abwandeln einer Vorlage?

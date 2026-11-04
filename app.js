@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '31';
+const APP_VERSION = '32';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -685,7 +685,9 @@ function renderSetup() {
       // Zeiten direkt hier einstellbar; „Bearbeiten“ nur für den Aufbau
       return '<div class="ablauf-card"><div class="ablauf-head"><span><b>' + esc(c.name) + '</b><small class="muted">' +
         ROLES.find((r) => r[0] === c.roles)[1] + '</small></span>' +
-        '<button type="button" class="chip" data-edit="1">Bearbeiten</button></div>' +
+        '<button type="button" class="chip edit-chip" data-edit="1">' +
+        '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z M14 6l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>' +
+        'Ablauf bearbeiten</button></div>' +
         c.sections.map((x, i) => '<div class="field"><span class="lbl">' + esc(x.name) + (c.roles !== 'mutual' ? '<small>je Partner</small>' : '') + '</span><span class="stepper">' +
           '<button type="button" data-qsec="' + i + '" data-d="-1" aria-label="' + esc(x.name) + ' kürzer">−</button><output>' + fmt(x.dur) + '</output>' +
           '<button type="button" data-qsec="' + i + '" data-d="1" aria-label="' + esc(x.name) + ' länger">+</button></span></div>').join('') +
