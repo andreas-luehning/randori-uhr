@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '39';
+const APP_VERSION = '40';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -24,6 +24,7 @@ const MODE_DEFAULTS = {
 const ABLAUF_EXAMPLE = { name: 'Uchi-komi + Ne-waza', sections: [{ name: 'Uchi-komi', dur: 120 }, { name: 'Ne-waza', dur: 60 }] };
 
 const ROUND_MODES = [['count', 'Anzahl'], ['open', 'Offen'], ['until', 'Bis Uhrzeit']];
+const TRANSITIONS = [['auto', 'Auto-Pause'], ['wait', 'Warten'], ['pausewait', 'Pause + Warten']];
 const PARTNER_CHANGE = [['yes', 'Ja'], ['no', 'Nein'], ['call', 'Nach Ansage']];
 const OPEN_ROUNDS = 500; // Obergrenze für „offen“ / „bis Uhrzeit“, wird praktisch nie erreicht
 
@@ -63,7 +64,63 @@ function normalize(src) {
     if (!/^\d\d:\d\d$/.test(c.untilTime || '')) c.untilTime = '21:00';
     if (!PARTNER_CHANGE.some((r) => r[0] === c.partnerChange)) c.partnerChange = 'yes';
   }
-  return c;
+  return sanitizeConfig(c);
+}
+
+/* Strenge Prüfung aller Werte: Daten aus dem Speicher oder einer importierten Datei könnten
+   verändert sein. Zahlen werden echte Zahlen in festen Grenzen, Texte werden gekürzt,
+   Auswahlwerte müssen aus der erlaubten Liste stammen. Unbekannte Felder fallen weg. */
+function num(v, lo, hi, def) {
+  const n = Math.round(Number(v));
+  return Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : def;
+}
+function text(v, max, def) {
+  if (typeof v !== 'string') return def;
+  const t = v.replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, max);
+  return t || def;
+}
+function pick(v, list, def) { return list.includes(v) ? v : def; }
+const ids = (list) => list.map((x) => x[0]);
+
+function sanitizeConfig(c) {
+  const id = typeof c.id === 'string' && /^[\w-]{1,40}$/.test(c.id) ? c.id : null;
+  const common = {
+    roundsMode: pick(c.roundsMode, ids(ROUND_MODES), 'count'),
+    untilTime: typeof c.untilTime === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(c.untilTime) ? c.untilTime : '21:00',
+    partnerChange: pick(c.partnerChange, ids(PARTNER_CHANGE), 'yes'),
+    transition: pick(c.transition, ids(TRANSITIONS), 'wait'),
+    pause: num(c.pause, 5, 300, 30),
+  };
+  if (c.mode === 'randori') {
+    return Object.assign({ id, name: text(c.name, 40, ''), mode: 'randori', rounds: num(c.rounds, 1, 30, 3), work: num(c.work, 15, 900, 180) }, common);
+  }
+  if (c.mode === 'zirkel') {
+    return { id, name: text(c.name, 40, ''), mode: 'zirkel', rounds: num(c.rounds, 1, 50, 10), work: num(c.work, 5, 600, 40), rest: num(c.rest, 0, 600, 20) };
+  }
+  const sections = (Array.isArray(c.sections) ? c.sections : []).slice(0, MAX_SECTIONS)
+    .map((x) => ({ name: text(x && x.name, 24, ''), dur: num(x && x.dur, 15, 900, 60) }))
+    .filter((x) => x.name);
+  const secs = sections.length ? sections : clone(ABLAUF_EXAMPLE.sections);
+  return Object.assign({
+    id, name: text(c.name, 40, secs.map((x) => x.name).join(' + ').slice(0, 40)), mode: 'ablauf',
+    roles: pick(c.roles, ids(ROLES), 'ab'), sections: secs,
+    gap: num(c.gap, 0, 60, 10), swapPause: num(c.swapPause, 0, 60, 5), signal: pick(Number(c.signal), [0, 15, 30, 60], 0),
+    partners: num(c.partners, 1, 30, 2),
+  }, common);
+}
+
+function sanitizeSettings(s) {
+  s = s && typeof s === 'object' ? s : {};
+  return {
+    volume: Math.min(1, Math.max(0, Number.isFinite(Number(s.volume)) ? Number(s.volume) : DEFAULT_SETTINGS.volume)),
+    warn: pick(Number(s.warn), [0, 10, 15, 30], DEFAULT_SETTINGS.warn),
+    lead: pick(Number(s.lead), [0, 5, 10, 15], DEFAULT_SETTINGS.lead),
+    media: s.media === true,
+    theme: pick(s.theme, ['klassisch', 'aquarell', 'magie'], DEFAULT_SETTINGS.theme),
+    signal: pick(s.signal, ids(SIGNAL_TYPES), DEFAULT_SETTINGS.signal),
+    warnType: pick(s.warnType, ids(WARN_TYPES), DEFAULT_SETTINGS.warnType),
+    signalCount: pick(s.signalCount, ids(SIGNAL_COUNTS), DEFAULT_SETTINGS.signalCount),
+  };
 }
 
 // Gleich bis auf die Kennung? (für „Änderungen in Vorlage speichern“)
@@ -91,7 +148,7 @@ const store = {
   },
 };
 
-let settings = Object.assign({}, DEFAULT_SETTINGS, store.get('settings', {}));
+let settings = sanitizeSettings(store.get('settings', {}));
 let customPresets = store.get('presets', []).map(normalize);
 let config = normalize(store.get('config', BUILTIN[0]));
 let selectedPresetId = store.get('selectedPreset', BUILTIN[0].id);
@@ -732,7 +789,6 @@ const FIELDS = {
   ],
 };
 
-const TRANSITIONS = [['auto', 'Auto-Pause'], ['wait', 'Warten'], ['pausewait', 'Pause + Warten']];
 
 // Japanische Schriftzeichen als dezente Verzierung (feste Texte, kein Nutzereingabe)
 function jp(text) { return '<span class="jp-deco" lang="ja">' + text + '</span>'; }
@@ -873,6 +929,7 @@ function show(name) {
   document.body.classList.toggle('on-setup', name === 'setup');
   if (name !== 'run') document.body.className = 'on-' + name;
   if (name === 'setup') renderSetup();
+  showUpdateBar();
   if (name === 'settings') { renderSettings(); updateInstallUi(); }
   if (name === 'editor') renderEditor();
 }
@@ -1191,6 +1248,123 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
+/* ================= Vorlagen sichern und teilen (Datei) ================= */
+
+const EXPORT_FORMAT = 1;
+const MAX_IMPORT_BYTES = 200 * 1024;
+const MAX_IMPORT_PRESETS = 100;
+
+function exportData() {
+  const data = { app: 'randori-uhr', format: EXPORT_FORMAT, version: APP_VERSION, exported: new Date().toISOString(),
+    presets: customPresets.map(clone) };
+  if ($('expSettings').checked) data.settings = clone(settings);
+  return data;
+}
+function exportFileName() { return 'randori-uhr-vorlagen-' + new Date().toISOString().slice(0, 10) + '.json'; }
+
+function setBackupMsg(text, bad) {
+  const el = $('backupMsg');
+  el.textContent = text;
+  el.hidden = !text;
+  el.classList.toggle('bad', !!bad);
+}
+
+$('btnExport').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(exportData(), null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = exportFileName();
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  setBackupMsg(customPresets.length + ' eigene Vorlage(n) exportiert' + ($('expSettings').checked ? ' (mit Einstellungen)' : '') + '.');
+});
+
+// Teilen (z. B. per WhatsApp oder Mail), wo der Browser Dateien teilen kann
+function canShareFiles() {
+  try { return !!(navigator.canShare && navigator.canShare({ files: [new File(['{}'], 'x.json', { type: 'application/json' })] })); } catch (e) { return false; }
+}
+$('btnShare').hidden = !canShareFiles();
+$('btnShare').addEventListener('click', async () => {
+  const file = new File([JSON.stringify(exportData(), null, 2)], exportFileName(), { type: 'application/json' });
+  try { await navigator.share({ files: [file], title: 'Randori-Uhr Vorlagen' }); } catch (e) { /* abgebrochen */ }
+});
+
+let pendingImport = null;
+
+$('btnImport').addEventListener('click', () => { $('importFile').value = ''; $('importFile').click(); });
+$('importFile').addEventListener('change', async (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  pendingImport = null;
+  $('importBox').hidden = true;
+  if (file.size > MAX_IMPORT_BYTES) { setBackupMsg('Die Datei ist zu groß für eine Vorlagen-Datei.', true); return; }
+  let data;
+  try { data = JSON.parse(await file.text()); } catch (err) { setBackupMsg('Die Datei konnte nicht gelesen werden. Ist es eine exportierte Randori-Uhr-Datei?', true); return; }
+  if (!data || typeof data !== 'object' || data.app !== 'randori-uhr' || !Array.isArray(data.presets)) {
+    setBackupMsg('Das ist keine Vorlagen-Datei der Randori-Uhr.', true);
+    return;
+  }
+  if (Number(data.format) > EXPORT_FORMAT) { setBackupMsg('Die Datei stammt aus einer neueren Version der Uhr. Bitte die Uhr erst aktualisieren.', true); return; }
+  const presets = data.presets.slice(0, MAX_IMPORT_PRESETS).filter((p) => p && typeof p === 'object').map(normalize);
+  const hasSettings = !!(data.settings && typeof data.settings === 'object');
+  if (!presets.length && !hasSettings) { setBackupMsg('Die Datei enthält keine Vorlagen.', true); return; }
+  pendingImport = { presets, settings: hasSettings ? sanitizeSettings(data.settings) : null };
+  setBackupMsg('');
+  $('importSummary').textContent = 'Die Datei enthält ' + presets.length + ' Vorlage(n)' + (hasSettings ? ' und Einstellungen' : '') + ': ' +
+    presets.slice(0, 6).map((p) => p.name || shortName(p)).join(', ') + (presets.length > 6 ? ' …' : '');
+  $('impSettingsRow').hidden = !hasSettings;
+  $('impSettings').checked = false;
+  $('importBox').hidden = false;
+});
+
+// Gleiche Namen beim Hinzufügen unterscheidbar machen: „Name (2)“
+function uniqueName(name, taken) {
+  if (!taken.has(name)) return name;
+  let n = 2;
+  while (taken.has(name + ' (' + n + ')')) n++;
+  return name + ' (' + n + ')';
+}
+
+function applyImport(replace) {
+  if (!pendingImport) return;
+  const base = replace ? [] : customPresets.slice();
+  const taken = new Set(BUILTIN.concat(base).map((p) => p.name));
+  const stamp = Date.now();
+  const added = pendingImport.presets.map((p, i) => {
+    const name = uniqueName(p.name || shortName(p), taken);
+    taken.add(name);
+    return Object.assign(clone(p), { id: 'c' + stamp + '-' + i, name });
+  });
+  customPresets = base.concat(added);
+  store.set('presets', customPresets);
+  if (!customPresets.some((p) => p.id === loadedPresetId)) loadedPresetId = null;
+  let msg = added.length + ' Vorlage(n) ' + (replace ? 'übernommen, eigene Vorlagen ersetzt' : 'hinzugefügt');
+  if (pendingImport.settings && $('impSettings').checked) {
+    settings = pendingImport.settings;
+    saveSettings();
+    applyTheme();
+    renderSettings();
+    updateMediaState();
+    msg += ', Einstellungen übernommen';
+  }
+  pendingImport = null;
+  $('importBox').hidden = true;
+  saveConfig();
+  setBackupMsg(msg + '.');
+}
+$('impAdd').addEventListener('click', () => applyImport(false));
+$('impReplace').addEventListener('click', () => applyImport(true));
+$('impCancel').addEventListener('click', () => { pendingImport = null; $('importBox').hidden = true; });
+
+/* ================= Update-Hinweis ================= */
+
+// Neue Version ist geladen: Hinweis zeigen (nicht mitten im Training)
+let updateReady = false;
+function showUpdateBar() { $('updateBar').hidden = !(updateReady && current !== 'run'); }
+$('updateBar').addEventListener('click', () => location.reload());
+
 /* ================= Installation & Diagnose ================= */
 
 let installEvent = null;
@@ -1281,5 +1455,12 @@ updateFullscreenButton();
 show('setup');
 
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  const hadController = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (hadController) { updateReady = true; showUpdateBar(); }
+  });
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').then((reg) => {
+    // Beim Zurückkehren zur App nach Updates sehen
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') reg.update().catch(() => {}); });
+  }).catch(() => {}));
 }

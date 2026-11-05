@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0E1116">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Randori-Uhr</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
@@ -11,6 +12,7 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="on-setup">
+<button id="updateBar" class="update-bar" type="button" hidden>Neue Version verfügbar – tippen zum Laden</button>
 
 <!-- Einstellungen der Übung -->
 <div id="setup" class="screen">
@@ -135,9 +137,30 @@
       <button id="btnDiag" class="chip" type="button">Prüfen</button>
       <pre id="diagOut" class="diag-out" hidden></pre>
     </div>
-    <div class="row">
-      <span>Version<small>Stand der App auf diesem Gerät</small></span>
-      <b id="appVersion" class="keytest"></b>
+    <div class="row backup">
+      <span>Vorlagen sichern und teilen<small>Eigene Vorlagen als Datei speichern, auf ein anderes Gerät übertragen oder an Kollegen weitergeben</small></span>
+      <span class="btns">
+        <label class="chk"><input id="expSettings" type="checkbox"> mit Einstellungen</label>
+        <button id="btnExport" class="chip" type="button">Exportieren</button>
+        <button id="btnShare" class="chip" type="button" hidden>Teilen</button>
+        <button id="btnImport" class="chip" type="button">Importieren</button>
+        <input id="importFile" type="file" accept=".json,application/json" hidden>
+      </span>
+      <p id="backupMsg" class="backup-msg" role="status" hidden></p>
+      <div id="importBox" class="import-box" hidden>
+        <p id="importSummary"></p>
+        <label id="impSettingsRow" class="chk"><input id="impSettings" type="checkbox"> Einstellungen aus der Datei übernehmen (Farbschema, Töne …)</label>
+        <span class="btns">
+          <button id="impAdd" class="chip primary-chip" type="button">Hinzufügen</button>
+          <button id="impReplace" class="chip" type="button">Eigene Vorlagen ersetzen</button>
+          <button id="impCancel" class="chip" type="button">Abbrechen</button>
+        </span>
+      </div>
+    </div>
+    <div class="row about">
+      <span>Randori-Uhr<small>Trainingsuhr für Randori, Geiko und Zirkel · von Andreas Lühning</small>
+        <small>Läuft offline. Alle Vorlagen und Einstellungen bleiben auf diesem Gerät – es werden keine Daten gesendet.</small></span>
+      <b class="about-version">Version <span id="appVersion"></span></b>
     </div>
   </div>
 </div>

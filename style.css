@@ -579,3 +579,19 @@ html[data-theme] .until input { color-scheme: dark; }
 }
 .edit-row svg { width: 20px; height: 20px; flex: none; }
 .edit-row small { font-weight: 500; font-size: 13px; color: var(--muted); }
+
+/* ---------- Vorlagen sichern, Über die App, Update-Hinweis ---------- */
+.chk { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; color: var(--muted); }
+.chk input { width: 22px; height: 22px; accent-color: var(--accent); }
+.backup-msg, .import-box { flex: 1 1 100%; margin: 0; }
+.backup-msg { font-size: 15px; color: var(--accent); }
+.backup-msg.bad { color: var(--swap-bg); }
+.import-box { display: flex; flex-direction: column; gap: 10px; padding: 12px; border-radius: 12px; background: var(--bg); }
+.import-box p { margin: 0; font-size: 15px; }
+.row.about > span { gap: 4px; }
+.update-bar {
+  position: fixed; left: 50%; top: max(10px, env(safe-area-inset-top)); transform: translateX(-50%); z-index: 30;
+  border: 0; border-radius: 22px; padding: 12px 20px; min-height: 44px; font-size: 16px; font-weight: 700;
+  background: var(--accent); color: var(--accent-text); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+.about-version { font-size: 16px; color: var(--muted); white-space: nowrap; }

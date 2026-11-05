@@ -153,3 +153,13 @@ Struktur (von klein nach groß):
 - Voraussetzungen Play Store: Entwicklerkonto (einmalige Gebühr, Identitätsprüfung), Datenschutzerklärung,
   Altersfreigabe-Fragebogen, Angaben zur Datensicherheit, Store-Texte und Screenshots; bei neuen privaten
   Konten ein geschlossener Test mit Testern vor der Veröffentlichung (aktuelle Regeln vorher prüfen).
+
+## Branch `export-import` (Version 40)
+
+- Vorlagen sichern und teilen: Export als JSON-Datei (optional mit Einstellungen), „Teilen“ wo der Browser es kann,
+  Import mit Vorschau, „Hinzufügen“ (doppelte Namen bekommen „(2)“) oder „Eigene Vorlagen ersetzen“.
+- Strenge Prüfung aller gespeicherten und importierten Werte (Zahlen in Grenzen, Texte gekürzt, nur erlaubte
+  Auswahlwerte, unbekannte Felder fallen weg, Dateien max. 200 KB / 100 Vorlagen).
+- Content Security Policy: nur eigener Code darf laufen.
+- „Über die App“ in den Einstellungen (Name, Zweck, von Andreas Lühning, Datenschutz-Satz, Version).
+- Update-Hinweis „Neue Version verfügbar – tippen zum Laden“ (nicht während des Trainings).
