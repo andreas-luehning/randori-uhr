@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '45';
+const APP_VERSION = '46';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -832,7 +832,7 @@ function renderSetup() {
   const html = FIELDS[config.mode].filter((f) => !f.when || f.when(config)).map((f) => {
     if (f.type === 'ablauf') {
       const c = config;
-      const info = (c.sections.length > 1 && c.gap ? 'Pause zwischen Formen ' + fmt(c.gap) + ' · ' : '') +
+      const info = (c.sections.length > 1 && c.gap ? 'Kurze Pause ' + fmt(c.gap) + ' · ' : '') +
         (c.roles !== 'mutual' ? 'Rollenwechsel ' + fmt(c.swapPause) : c.signal ? 'Wechselsignal alle ' + fmt(c.signal) : 'ohne Wechselsignal');
       // Zeiten direkt hier einstellbar; „Bearbeiten“ nur für den Aufbau
       // Aufbau: Name und Rollen oben, Zeiten in der Mitte, „Serie bearbeiten“ als eigene Zeile unten
@@ -1054,7 +1054,7 @@ function renderEditor() {
     const sep = i && d.roles !== 'mutual' && p[0] !== prev[i - 1][0] ? '<span class="muted">⇄</span>' : '';
     return sep + '<span class="sec-pill' + (p.startsWith('A ') ? ' a' : '') + '">' + esc(p) + '</span>';
   }).join('');
-  let times = edStepper('gap', 'Pause zwischen Formen', d.gap);
+  let times = edStepper('gap', 'Kurze Pause dazwischen', d.gap);
   if (d.roles === 'mutual') {
     times += '<div class="field-col"><span class="lbl">Wechselsignal<small>kurzer Ton als Erinnerung zum Tauschen</small></span><div class="seg" role="radiogroup" aria-label="Wechselsignal">' +
       SIGNALS.map(([v, t]) => '<button type="button" role="radio" data-signal="' + v + '" aria-checked="' + (d.signal === v) + '">' + t + '</button>').join('') + '</div></div>';
