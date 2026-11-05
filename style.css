@@ -684,3 +684,5 @@ html[data-theme] .until input { color-scheme: dark; }
   #edGap .stepper button { width: 34px; height: 34px; }
   #edGap .stepper output { min-width: 48px; font-size: 18px; }
 }
+/* Pausen-Einstellung hebt sich von den Abschnitten ab: kein Kasten, gestrichelter Rand */
+#edGap .field { background: transparent; border: 1px dashed var(--line); }

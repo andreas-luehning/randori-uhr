@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '67';
+const APP_VERSION = '68';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -1058,7 +1058,7 @@ function renderEditor() {
   }).join('');
   let times = '';
   $('edGapWrap').hidden = d.sections.length < 2;
-  $('edGap').innerHTML = edStepper('gap', 'Pause', d.gap);
+  $('edGap').innerHTML = edStepper('gap', 'Alle Pausen', d.gap);
   if (d.roles === 'mutual') {
     times += '<div class="field-col"><span class="lbl">Wechselsignal<small>kurzer Ton als Erinnerung zum Tauschen</small></span><div class="seg" role="radiogroup" aria-label="Wechselsignal">' +
       SIGNALS.map(([v, t]) => '<button type="button" role="radio" data-signal="' + v + '" aria-checked="' + (d.signal === v) + '">' + t + '</button>').join('') + '</div></div>';
