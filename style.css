@@ -618,13 +618,6 @@ html[data-theme] .until input { color-scheme: dark; }
   .panel { padding: 14px 12px; }
   .ablauf-card { padding: 12px; }
   #editor .bar h1 { font-size: 22px; }
-  .sec-row { grid-template-columns: auto auto 1fr auto; grid-template-areas: "nm nm nm st" "up del . st"; row-gap: 0; column-gap: 4px; padding: 8px 10px 4px 16px; }
-
-  .sec-row .sec-up { grid-area: up; }
-  .sec-row .nm { grid-area: nm; }
-  .sec-row .sec-del { grid-area: del; }
-  .sec-row .stepper { grid-area: st; align-self: center; }
-  .sec-gap { padding-left: 16px; }
 }
 @media (max-width: 600px) {
   #editor .bar h1 { font-size: 20px; }
@@ -650,3 +643,20 @@ html[data-theme] .until input { color-scheme: dark; }
 .sec-row .sec-up, .sec-row .sec-del { width: 36px; height: 30px; margin: 2px 4px 2px 0; border: 1px solid var(--line); border-radius: 8px;
   background: transparent; color: var(--muted); display: grid; place-items: center; font-size: 15px; }
 .sec-row .sec-del svg { width: 17px; height: 17px; }
+
+/* Formzeile im Ablauf: überall eine Reihe – ↑, Name, Zeit, Papierkorb, alles mittig ausgerichtet */
+.sec-row { grid-template-columns: auto 1fr auto auto; grid-template-areas: none; align-items: center; gap: 10px; padding: 8px 10px; }
+.sec-row .sec-up, .sec-row .sec-del { margin: 0; }
+.sec-row .stepper { gap: 6px; }
+.sec-row .stepper button { width: 44px; height: 44px; font-size: 22px; }
+.sec-row .stepper output { min-width: 64px; font-size: 24px; }
+.sec-gap { padding-left: 56px; }
+@media (max-width: 600px) {
+  .sec-row { gap: 6px; padding: 6px 8px; }
+  .sec-row .nm { font-size: 16px; }
+  .sec-row .sec-no { display: none; }
+  .sec-row .stepper { gap: 4px; }
+  .sec-row .stepper button { width: 38px; height: 38px; font-size: 20px; }
+  .sec-row .stepper output { min-width: 50px; font-size: 20px; }
+  .sec-gap { padding-left: 50px; }
+}

@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '62';
+const APP_VERSION = '63';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -1067,7 +1067,7 @@ function renderEditor() {
   $('edSections').innerHTML = d.sections.map((x, i) =>
     (i && d.gap ? '<div class="sec-gap">Pause ' + fmt(d.gap) + '</div>' : '') +
     '<div class="sec-row"><button type="button" class="sec-up" data-secup="' + i + '" aria-label="' + esc(x.name) + ' nach oben"' + (i ? '' : ' disabled') + '>↑</button>' +
-    '<span class="nm">' + (i + 1) + ' · ' + esc(x.name) + '</span><span class="stepper">' +
+    '<span class="nm"><span class="sec-no">' + (i + 1) + ' · </span>' + esc(x.name) + '</span><span class="stepper">' +
     '<button type="button" data-sec="' + i + '" data-d="-1" aria-label="' + esc(x.name) + ' kürzer">−</button><output>' + fmt(x.dur) + '</output>' +
     '<button type="button" data-sec="' + i + '" data-d="1" aria-label="' + esc(x.name) + ' länger">+</button></span>' +
     '<button type="button" class="sec-del" data-secdel="' + i + '" aria-label="' + esc(x.name) + ' entfernen"' + (d.sections.length < 2 ? ' disabled' : '') + '>' + TRASH_ICON + '</button></div>'
