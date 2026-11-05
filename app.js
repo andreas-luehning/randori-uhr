@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '59';
+const APP_VERSION = '60';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -1028,6 +1028,8 @@ function roundPreview(d) {
   return tmp.filter((x) => x.type === 'work').map((x) => (x.attacker ? x.attacker + ' ' : '') + x.section);
 }
 
+const TRASH_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
 function edStepper(key, label, val, sub) {
   return '<div class="field"><span class="lbl">' + label + (sub ? '<small>' + sub + '</small>' : '') + '</span><span class="stepper">' +
     '<button type="button" data-ed="' + key + '" data-d="-1" aria-label="' + label + ' weniger">−</button><output>' + fmt(val) + '</output>' +
@@ -1067,7 +1069,7 @@ function renderEditor() {
     '<span class="nm">' + (i + 1) + ' · ' + esc(x.name) + '</span><span class="stepper">' +
     '<button type="button" data-sec="' + i + '" data-d="-1" aria-label="' + esc(x.name) + ' kürzer">−</button><output>' + fmt(x.dur) + '</output>' +
     '<button type="button" data-sec="' + i + '" data-d="1" aria-label="' + esc(x.name) + ' länger">+</button></span>' +
-    '<button type="button" class="sec-del" data-secdel="' + i + '" aria-label="' + esc(x.name) + ' entfernen"' + (d.sections.length < 2 ? ' disabled' : '') + '>×</button></div>'
+    '<button type="button" class="sec-del" data-secdel="' + i + '" aria-label="' + esc(x.name) + ' entfernen"' + (d.sections.length < 2 ? ' disabled' : '') + '>' + TRASH_ICON + '</button></div>'
   ).join('');
   const full = d.sections.length >= MAX_SECTIONS;
   $('edAdd').innerHTML = SECTION_NAMES.map((n) => '<button type="button" class="chip" data-secadd="' + n + '"' + (full ? ' disabled' : '') + '>' + n + '</button>').join('');

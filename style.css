@@ -463,6 +463,8 @@ html[data-theme="magie"] body.phase-wait .muted { color: #3E5670; }
 .sec-row .nm { font-size: 17px; font-weight: 700; overflow-wrap: anywhere; }
 .sec-del { width: 44px; height: 44px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); font-size: 22px; }
 .sec-del:disabled { opacity: 0.3; }
+.sec-del { display: grid; place-items: center; }
+.sec-del svg { width: 20px; height: 20px; }
 @media (max-width: 760px) { .ed-grid { grid-template-columns: 1fr; } }
 
 /* Ablaufleiste im Training */
@@ -617,8 +619,9 @@ html[data-theme] .until input { color-scheme: dark; }
   .ablauf-card { padding: 12px; }
   #editor .bar h1 { font-size: 22px; }
   .sec-row { grid-template-columns: auto auto 1fr auto; grid-template-areas: "nm nm nm st" "up del . st"; row-gap: 0; column-gap: 4px; padding: 8px 10px 4px 16px; }
-  .sec-row .sec-up, .sec-row .sec-del { width: 40px; height: 36px; font-size: 18px; }
-  .sec-row .sec-up { margin-left: -10px; }
+  .sec-row .sec-up, .sec-row .sec-del { width: 36px; height: 30px; margin: 2px 4px 2px 0; border: 1px solid var(--line); border-radius: 8px;
+    display: grid; place-items: center; font-size: 15px; }
+  .sec-row .sec-del svg { width: 17px; height: 17px; }
   .sec-row .sec-up { grid-area: up; }
   .sec-row .nm { grid-area: nm; }
   .sec-row .sec-del { grid-area: del; }
