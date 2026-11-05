@@ -611,9 +611,9 @@ html[data-theme] .until input { color-scheme: dark; }
   #btnSettings .chip-txt { display: none; }
   #btnSettings { width: 48px; padding: 0; display: grid; place-items: center; }
   #btnFullscreen { display: none; }
-  .preset-list { grid-template-columns: 1fr; gap: 8px; }
+  .preset-list { grid-template-columns: minmax(0, 1fr); gap: 8px; }
   .preset { min-height: 0; padding: 10px 14px; gap: 2px; }
-  .preset span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .preset span { overflow-wrap: anywhere; }
   .preset.preset-new { flex-direction: row; align-items: baseline; gap: 10px; }
   .panel { padding: 14px 12px; }
   .ablauf-card { padding: 12px; }
@@ -711,3 +711,6 @@ html[data-theme] .until input { color-scheme: dark; }
 @media (max-width: 600px) { .gap-row .sec-sp { width: 32px; } .gap-toggle { width: 32px; } .gap-toggle span { width: 30px; } .gap-toggle[aria-checked="true"] span::after { left: 12px; } }
 /* Einstellungen (Tablet): alle Knopfleisten gleich breit und rechts bündig */
 @media (min-width: 601px) { .settings-list .sound-seg { width: 310px; grid-auto-columns: 1fr; } }
+/* Lange Namen/Beschreibungen umbrechen statt die Seite zu verbreitern */
+.preset { min-width: 0; }
+html, body { overflow-x: hidden; }
