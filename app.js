@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '65';
+const APP_VERSION = '66';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -31,7 +31,9 @@ const PARTNER_CHANGE = [['yes', 'Ja'], ['no', 'Nein'], ['call', 'Nach Ansage']];
 const OPEN_ROUNDS = 500; // Obergrenze für „offen“ / „bis Uhrzeit“, wird praktisch nie erreicht
 
 // Rollen im Ablauf: A komplett, dann B / abschnittsweise abwechseln / wechselseitig ohne feste Rollen
-const ROLES = [['ab', 'A komplett, dann B'], ['section', 'Nach jedem Abschnitt'], ['mutual', 'Wechselseitig']];
+const ROLES = [['ab', 'Nach der Serie'], ['section', 'Nach jedem Abschnitt'], ['mutual', 'Wechselseitig']];
+// Kurzbeschreibung für Karte und Vorlage
+const ROLE_TEXT = { ab: 'Tori/Uke-Wechsel nach der Serie', section: 'Tori/Uke-Wechsel nach jedem Abschnitt', mutual: 'Wechselseitig üben' };
 const SIGNALS = [[0, 'Aus'], [15, '0:15'], [30, '0:30'], [60, '1:00']];
 // Übungsformen in DJB-Schreibweise: erster Bestandteil groß, Rest klein, mit Bindestrich
 const SECTION_NAMES = ['Tandoku-renshu', 'Ukemi', 'Uchi-komi', 'Nage-komi', 'Yakusoku-geiko', 'Kakari-geiko', 'Butsukari-geiko', 'Randori', 'Bodenrandori', 'Ne-waza'];
@@ -208,7 +210,7 @@ function describe(c) {
   if (c.mode === 'kakari') return roundsText(c) + ' · je Durchgang ' + fmt(c.dur) + ' Tori';
   if (c.mode === 'ablauf') {
     if (c.sections.length === 1 && c.roles !== 'mutual') return c.sections[0].name + ' · ' + roundsText(c) + ' · je ' + fmt(c.sections[0].dur) + ' Tori';
-    return ROLES.find((r) => r[0] === c.roles)[1] + ' · ' + c.sections.map((x) => x.name).join(' + ') + ' · ' + roundsText(c);
+    return ROLE_TEXT[c.roles] + ' · ' + c.sections.map((x) => x.name).join(' + ') + ' · ' + roundsText(c);
   }
   return c.rounds + ' Runden · ' + fmt(c.work) + ' Arbeit / ' + fmt(c.rest) + ' Pause';
 }
@@ -835,7 +837,7 @@ function renderSetup() {
       // Zeiten direkt hier einstellbar; „Bearbeiten“ nur für den Aufbau
       // Aufbau: Name und Rollen oben, Zeiten in der Mitte, „Serie bearbeiten“ als eigene Zeile unten
       return '<div class="ablauf-card"><div class="ablauf-head"><span><b>' + esc(c.name) + '</b><small class="muted">' +
-        ROLES.find((r) => r[0] === c.roles)[1] + '</small></span></div>' +
+        ROLE_TEXT[c.roles] + '</small></span></div>' +
         c.sections.map((x, i) => '<div class="field"><span class="lbl">' + esc(x.name) + (c.roles !== 'mutual' ? '<small>je Durchgang</small>' : '') + '</span><span class="stepper">' +
           '<button type="button" data-qsec="' + i + '" data-d="-1" aria-label="' + esc(x.name) + ' kürzer">−</button><output>' + fmt(x.dur) + '</output>' +
           '<button type="button" data-qsec="' + i + '" data-d="1" aria-label="' + esc(x.name) + ' länger">+</button></span></div>').join('') +
@@ -853,9 +855,9 @@ function renderSetup() {
       } else if (rm === 'until') {
         ctl = '<label class="until"><span>Ende um</span><input id="untilTime" type="time" value="' + esc(config.untilTime) + '"></label>';
       } else {
-        ctl = '<small class="muted">bis du beendest</small>';
+        ctl = '<output class="open-val" aria-label="unbegrenzt">∞</output>';
       }
-      return '<div class="field-col"><div class="field"><span class="lbl">Runden</span>' + ctl + '</div>' +
+      return '<div class="field-col"><div class="field"><span class="lbl">Runden' + (rm === 'open' ? '<small>bis du die Uhr beendest</small>' : '') + '</span>' + ctl + '</div>' +
         '<div class="seg" role="radiogroup" aria-label="Runden">' +
         ROUND_MODES.map(([v, t]) => '<button type="button" role="radio" data-rmode="' + v + '" aria-checked="' + (rm === v) + '">' + t + '</button>').join('') +
         '</div>' + (rm === 'until' ? '<small class="muted">Die laufende Runde wird zu Ende gemacht, danach ist Schluss.</small>' : '') + '</div>';
@@ -1025,7 +1027,7 @@ let draftIsNew = false;
 // Vorschau „So läuft eine Runde“
 function roundPreview(d) {
   const tmp = [];
-  buildAblauf(Object.assign({}, d, { partners: 1 }), tmp, () => {});
+  buildAblauf(Object.assign({}, d, { partners: 1, roundsMode: 'count' }), tmp, () => {});
   return tmp.filter((x) => x.type === 'work').map((x) => (x.attacker ? x.attacker + ' ' : '') + x.section);
 }
 
@@ -1045,7 +1047,7 @@ function renderEditor() {
   $('edEmpty').hidden = !!d.sections.length;
   $('edRoles').innerHTML = ROLES.map(([v, t]) => '<button type="button" role="radio" data-roles="' + v + '" aria-checked="' + (d.roles === v) + '">' + t + '</button>').join('');
   $('edRolesHint').textContent = {
-    ab: 'Erst ist Partner A in der ganzen Serie Tori, dann Partner B.',
+    ab: 'Partner A ist die ganze Serie über Tori, danach Partner B.',
     section: 'Jeder Abschnitt erst mit Partner A als Tori, dann mit Partner B.',
     mutual: 'Jeder Abschnitt läuft einmal, die Paare wechseln sich selbst ab.',
   }[d.roles];

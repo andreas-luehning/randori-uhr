@@ -186,7 +186,7 @@
     <section class="ed-col">
       <label class="label" for="edName">Name</label>
       <input id="edName" class="ed-name" maxlength="40" autocomplete="off" placeholder="z. B. Uchi-komi + Ne-waza">
-      <span class="label">Tori / Uke</span>
+      <span class="label">Tori/Uke wechseln</span>
       <div id="edRoles" class="seg" role="radiogroup" aria-label="Tori und Uke"></div>
       <div class="ed-preview">
         <small id="edRolesHint"></small>
@@ -199,16 +199,13 @@
       <span class="label">Ablauf</span>
       <p id="edEmpty" class="muted ed-empty" hidden>Der Ablauf ist noch leer – unten Formen und Inhalte antippen oder einen eigenen Namen eingeben.</p>
       <div id="edSections" class="fields"></div>
+      <div id="edGapWrap"><div id="edGap" class="fields"></div></div>
       <span class="label">Formen und Inhalte</span>
       <div id="edAdd" class="ed-pills"></div>
       <form id="edCustom" class="preset-form">
         <input id="edCustomName" maxlength="24" placeholder="Eigener Name" aria-label="Eigener Name für einen Abschnitt" autocomplete="off">
         <button class="chip primary-chip" type="submit">+ Hinzufügen</button>
       </form>
-      <div id="edGapWrap">
-        <span class="label">Einstellung</span>
-        <div id="edGap" class="fields"></div>
-      </div>
     </section>
   </div>
 </div>

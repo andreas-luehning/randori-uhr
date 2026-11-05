@@ -660,3 +660,27 @@ html[data-theme] .until input { color-scheme: dark; }
   .sec-row .stepper output { min-width: 50px; font-size: 20px; }
   .sec-gap { padding-left: 50px; }
 }
+
+/* Formzeilen symmetrisch: alle Knöpfe gleich hoch, Zeit nicht größer als nötig */
+.sec-row .sec-up, .sec-row .sec-del { width: 36px; height: 36px; }
+.sec-row .stepper button { width: 36px; height: 36px; font-size: 20px; }
+.sec-row .stepper output { min-width: 56px; font-size: 20px; }
+.sec-row .nm { font-size: 17px; }
+/* Pause direkt unter dem Ablauf, wie eine Zeile gestaltet */
+#edGapWrap { margin-top: 0; }
+#edGap .field { background: var(--panel); border-radius: 12px; padding: 8px 56px 8px 56px; }
+#edGap .field .lbl { font-size: 17px; color: var(--muted); }
+#edGap .stepper { gap: 6px; }
+#edGap .stepper button { width: 36px; height: 36px; font-size: 20px; }
+#edGap .stepper output { min-width: 56px; font-size: 20px; }
+.open-val { font-size: 34px; font-weight: 700; color: var(--muted); padding-right: 24px; }
+@media (max-width: 600px) {
+  .sec-row .sec-up, .sec-row .sec-del { width: 32px; height: 34px; }
+  .sec-row .stepper button { width: 34px; height: 34px; font-size: 18px; }
+  .sec-row .stepper output { min-width: 48px; font-size: 18px; }
+  .sec-row .nm { font-size: 16px; }
+  #edGap .field { padding: 6px 46px 6px 46px; }
+  #edGap .field .lbl { font-size: 16px; }
+  #edGap .stepper button { width: 34px; height: 34px; }
+  #edGap .stepper output { min-width: 48px; font-size: 18px; }
+}
