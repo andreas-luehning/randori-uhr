@@ -696,3 +696,16 @@ html[data-theme] .until input { color-scheme: dark; }
   #edTimes .stepper button { width: 34px; height: 34px; font-size: 18px; }
   #edTimes .stepper output { min-width: 48px; font-size: 18px; }
 }
+
+/* Pausen-Zeile: wie eine Abschnittszeile ausgerichtet, gestrichelt, Schalter am Ende */
+.gap-row { background: transparent; border: 1px dashed var(--line); }
+.gap-row .nm { font-weight: 400; color: var(--muted); }
+.gap-row .sec-sp { width: 36px; }
+.gap-row.off .stepper output { color: var(--muted); font-weight: 600; }
+.gap-row .stepper button:disabled { opacity: 0.35; }
+.gap-toggle { width: 36px; height: 36px; border: 0; background: transparent; display: grid; place-items: center; padding: 0; }
+.gap-toggle span { width: 34px; height: 20px; border-radius: 10px; background: var(--line); position: relative; transition: background .15s; }
+.gap-toggle span::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--text); transition: left .15s; }
+.gap-toggle[aria-checked="true"] span { background: var(--accent); }
+.gap-toggle[aria-checked="true"] span::after { left: 16px; }
+@media (max-width: 600px) { .gap-row .sec-sp { width: 32px; } .gap-toggle { width: 32px; } .gap-toggle span { width: 30px; } .gap-toggle[aria-checked="true"] span::after { left: 12px; } }

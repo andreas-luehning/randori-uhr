@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '70';
+const APP_VERSION = '71';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -1058,7 +1058,14 @@ function renderEditor() {
   }).join('');
   let times = '';
   $('edGapWrap').hidden = d.sections.length < 2;
-  $('edGap').innerHTML = edStepper('gap', 'Dauer', d.gap);
+  // Pausen: Dauer einstellen und mit dem Schalter am Ende alle Pausen ein- oder ausschalten
+  const gapOn = d.gap > 0;
+  $('edGap').innerHTML = '<div class="sec-row gap-row' + (gapOn ? '' : ' off') + '"><span class="sec-sp" aria-hidden="true"></span>' +
+    '<span class="nm">Dauer</span><span class="stepper">' +
+    '<button type="button" data-ed="gap" data-d="-1" aria-label="Pausen kürzer"' + (gapOn ? '' : ' disabled') + '>−</button>' +
+    '<output>' + (gapOn ? fmt(d.gap) : 'aus') + '</output>' +
+    '<button type="button" data-ed="gap" data-d="1" aria-label="Pausen länger"' + (gapOn ? '' : ' disabled') + '>+</button></span>' +
+    '<button type="button" class="gap-toggle" data-gaptoggle="1" role="switch" aria-checked="' + gapOn + '" aria-label="Pausen ' + (gapOn ? 'ausschalten' : 'einschalten') + '"><span></span></button></div>';
   if (d.roles === 'mutual') {
     times += '<div class="field-col"><span class="lbl">Wechselsignal<small>kurzer Ton als Erinnerung zum Tauschen</small></span><div class="seg" role="radiogroup" aria-label="Wechselsignal">' +
       SIGNALS.map(([v, t]) => '<button type="button" role="radio" data-signal="' + v + '" aria-checked="' + (d.signal === v) + '">' + t + '</button>').join('') + '</div></div>';
@@ -1090,6 +1097,10 @@ function editorClick(t) {
   const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
   if (t.dataset.roles) { d.roles = t.dataset.roles; renderEditor(); return; }
   if (t.dataset.signal != null) { d.signal = Number(t.dataset.signal); renderEditor(); return; }
+  if (t.dataset.gaptoggle) {
+    if (d.gap > 0) { d.gapLast = d.gap; d.gap = 0; } else d.gap = d.gapLast || 10;
+    renderEditor(); return;
+  }
   if (t.dataset.ed) { const k = t.dataset.ed; d[k] = clamp(d[k] + Number(t.dataset.d) * 5, 0, 60); renderEditor(); return; }
   if (t.dataset.sec) { const x = d.sections[Number(t.dataset.sec)]; x.dur = clamp(x.dur + Number(t.dataset.d) * 15, 15, 900); renderEditor(); return; }
   if (t.dataset.secdel) { if (d.sections.length > 1) d.sections.splice(Number(t.dataset.secdel), 1); renderEditor(); return; }
