@@ -616,12 +616,12 @@ html[data-theme] .until input { color-scheme: dark; }
   .panel { padding: 14px 12px; }
   .ablauf-card { padding: 12px; }
   #editor .bar h1 { font-size: 22px; }
-  .sec-row { grid-template-columns: auto 1fr auto; grid-template-areas: "up nm del" "up st st"; row-gap: 6px; }
+  .sec-row { grid-template-columns: auto 1fr auto; grid-template-areas: "nm nm nm" "up st del"; row-gap: 4px; padding: 10px 10px 8px 16px; }
   .sec-row .sec-up { grid-area: up; }
   .sec-row .nm { grid-area: nm; }
   .sec-row .sec-del { grid-area: del; }
-  .sec-row .stepper { grid-area: st; justify-self: end; }
-  .sec-gap { padding-left: 52px; }
+  .sec-row .stepper { grid-area: st; justify-self: center; }
+  .sec-gap { padding-left: 16px; }
 }
 @media (max-width: 600px) {
   #editor .bar h1 { font-size: 20px; }
