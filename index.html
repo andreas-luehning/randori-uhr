@@ -167,7 +167,7 @@
   <div class="dialog-box" role="dialog" aria-modal="true" aria-labelledby="newTitle">
     <h2 id="newTitle">Was möchtest du neu anlegen?</h2>
     <button type="button" class="new-option" data-newmode="randori"><b>Randori</b><span>Rundenzeit, Runden, Pausen – mit Standardwerten beginnen</span></button>
-    <button type="button" class="new-option" data-newmode="ablauf"><b>Serie</b><span>Eine oder mehrere Formen, z. B. Kakari-geiko oder Uchi-komi + Ne-waza</span></button>
+    <button type="button" class="new-option" data-newmode="ablauf"><b>Serie</b><span>Ein oder mehrere Abschnitte, z. B. Kakari-geiko oder Uchi-komi + Ne-waza</span></button>
     <button type="button" class="new-option" data-newmode="zirkel"><b>Zirkel</b><span>Arbeit und Pause im Wechsel</span></button>
     <button id="newCancel" type="button" class="chip">Abbrechen</button>
   </div>
@@ -197,12 +197,12 @@
     </section>
     <section class="ed-col">
       <span class="label">Ablauf</span>
-      <p id="edEmpty" class="muted ed-empty" hidden>Der Ablauf ist noch leer – unten Formen antippen oder einen eigenen Namen eingeben.</p>
+      <p id="edEmpty" class="muted ed-empty" hidden>Der Ablauf ist noch leer – unten Formen und Inhalte antippen oder einen eigenen Namen eingeben.</p>
       <div id="edSections" class="fields"></div>
       <span class="label">Formen und Inhalte</span>
       <div id="edAdd" class="ed-pills"></div>
       <form id="edCustom" class="preset-form">
-        <input id="edCustomName" maxlength="24" placeholder="Eigener Name" aria-label="Eigener Name für eine Form" autocomplete="off">
+        <input id="edCustomName" maxlength="24" placeholder="Eigener Name" aria-label="Eigener Name für einen Abschnitt" autocomplete="off">
         <button class="chip primary-chip" type="submit">+ Hinzufügen</button>
       </form>
       <div id="edGapWrap">

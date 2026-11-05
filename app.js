@@ -1,13 +1,13 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '63';
+const APP_VERSION = '64';
 
 /* ================= Vorlagen & Speicher ================= */
 
 // Namensschema wie im Training üblich: Randori 3 × 3 = 3 Runden à 3 Min,
 // Kakari-geiko 2 × 2 = 2 Runden à 2 Min: je Durchgang 1 Min Tori, dann Rollenwechsel, danach Partnerwechsel.
-// Modi: Randori, Serie (intern 'ablauf': verbundene Formen, auch Kakari-geiko als einzelne Form), Zirkel.
+// Modi: Randori, Serie (intern 'ablauf': Abschnitte aus Formen und Inhalten, auch Kakari-geiko als einzelner Abschnitt), Zirkel.
 // Der frühere Modus „Kakari“ wird beim Laden in eine Serie mit einer Form umgewandelt.
 const BUILTIN = [
   { id: 'randori33', name: 'Randori 3 × 3', mode: 'randori', rounds: 3, work: 180, roundsMode: 'count', untilTime: '21:00',
@@ -1047,7 +1047,7 @@ function renderEditor() {
   $('edRolesHint').textContent = {
     ab: 'Erst ist Partner A in der ganzen Serie Tori, dann Partner B.',
     section: 'Jeder Abschnitt erst mit Partner A als Tori, dann mit Partner B.',
-    mutual: 'Jede Form läuft einmal, die Paare wechseln sich selbst ab.',
+    mutual: 'Jeder Abschnitt läuft einmal, die Paare wechseln sich selbst ab.',
   }[d.roles];
   const prev = roundPreview(d);
   $('edPreview').innerHTML = prev.map((p, i) => {
