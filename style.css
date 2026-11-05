@@ -686,3 +686,5 @@ html[data-theme] .until input { color-scheme: dark; }
 }
 /* Pausen-Einstellung hebt sich von den Abschnitten ab: kein Kasten, gestrichelter Rand */
 #edGap .field { background: transparent; border: 1px dashed var(--line); }
+#edGapWrap { display: flex; flex-direction: column; gap: 8px; margin: 10px 0 6px; }
+#edGapWrap[hidden] { display: none; }
