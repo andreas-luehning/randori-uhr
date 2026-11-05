@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '46';
+const APP_VERSION = '47';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -620,7 +620,7 @@ function nextText(i) {
     if (n.attacker && c.sections.length === 1) return 'Partner ' + n.attacker + ' ist Tori · ' + fmt(n.dur);
     return n.section + (n.attacker ? ' · Partner ' + n.attacker + ' ist Tori' : ' · wechselseitig') + ' · ' + fmt(n.dur);
   }
-  if (n.type === 'pause' && n.gap) return 'Kurze Pause ' + fmt(n.dur) + ' · dann ' + n.nextName;
+  if (n.type === 'pause' && n.gap) return 'Pause ' + fmt(n.dur) + ' · dann ' + n.nextName;
   if (n.type === 'work') return (c.mode === 'zirkel' ? 'Arbeit ' : 'Runde ' + n.round + ' · ') + fmt(n.dur);
   // Bei Randori und Geiko ist die Pause zugleich die Zeit für den Partnerwechsel (je nach Einstellung)
   if (n.type === 'pause') return c.mode === 'zirkel' || c.partnerChange !== 'yes' ? 'Pause ' + fmt(n.dur) : 'Pause + Partnerwechsel · ' + fmt(n.dur);
@@ -738,7 +738,7 @@ function render() {
     else label = s.section + (s.attacker ? '' : ' · wechselseitig');
   }
   else if (type === 'work') label = c.mode === 'zirkel' ? 'Arbeit' : '';
-  else if (type === 'pause' && s.gap) label = 'Kurze Pause · gleich ' + s.nextName;
+  else if (type === 'pause' && s.gap) label = 'Pause · gleich ' + s.nextName;
   else if (type === 'pause') {
     const pc = c.partnerChange || 'yes';
     label = c.mode === 'zirkel' || pc === 'no' ? 'Pause' : pc === 'call' ? 'Pause · Partnerwechsel nach Ansage' : 'Pause · Partner wechseln';
@@ -832,7 +832,7 @@ function renderSetup() {
   const html = FIELDS[config.mode].filter((f) => !f.when || f.when(config)).map((f) => {
     if (f.type === 'ablauf') {
       const c = config;
-      const info = (c.sections.length > 1 && c.gap ? 'Kurze Pause ' + fmt(c.gap) + ' · ' : '') +
+      const info = (c.sections.length > 1 && c.gap ? 'Pause ' + fmt(c.gap) + ' · ' : '') +
         (c.roles !== 'mutual' ? 'Rollenwechsel ' + fmt(c.swapPause) : c.signal ? 'Wechselsignal alle ' + fmt(c.signal) : 'ohne Wechselsignal');
       // Zeiten direkt hier einstellbar; „Bearbeiten“ nur für den Aufbau
       // Aufbau: Name und Rollen oben, Zeiten in der Mitte, „Serie bearbeiten“ als eigene Zeile unten
@@ -1054,7 +1054,7 @@ function renderEditor() {
     const sep = i && d.roles !== 'mutual' && p[0] !== prev[i - 1][0] ? '<span class="muted">⇄</span>' : '';
     return sep + '<span class="sec-pill' + (p.startsWith('A ') ? ' a' : '') + '">' + esc(p) + '</span>';
   }).join('');
-  let times = edStepper('gap', 'Kurze Pause dazwischen', d.gap);
+  let times = edStepper('gap', 'Pause', d.gap, 'vor der nächsten Form');
   if (d.roles === 'mutual') {
     times += '<div class="field-col"><span class="lbl">Wechselsignal<small>kurzer Ton als Erinnerung zum Tauschen</small></span><div class="seg" role="radiogroup" aria-label="Wechselsignal">' +
       SIGNALS.map(([v, t]) => '<button type="button" role="radio" data-signal="' + v + '" aria-checked="' + (d.signal === v) + '">' + t + '</button>').join('') + '</div></div>';
