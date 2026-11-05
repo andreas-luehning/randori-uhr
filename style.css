@@ -595,8 +595,5 @@ html[data-theme] .until input { color-scheme: dark; }
   background: var(--accent); color: var(--accent-text); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 .about-version { font-size: 16px; color: var(--muted); white-space: nowrap; }
-/* Pause im Ablauf: an den Formzeilen ausrichten (Platz für ↑ links und × rechts) */
-#edGap .field { padding: 0 62px 0 58px; }
-#edGap .field .lbl { font-size: 17px; }
-.sec-gap { margin: -6px 0; padding-left: 58px; font-size: 14px; color: var(--muted); }
-.sec-gap::before { content: '⋯ '; }
+#edGapWrap { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+#edGapWrap[hidden] { display: none; }

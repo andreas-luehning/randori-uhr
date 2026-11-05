@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '50';
+const APP_VERSION = '51';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -1055,7 +1055,8 @@ function renderEditor() {
     return sep + '<span class="sec-pill' + (p.startsWith('A ') ? ' a' : '') + '">' + esc(p) + '</span>';
   }).join('');
   let times = '';
-  $('edGap').innerHTML = d.sections.length > 1 ? edStepper('gap', 'Pause', d.gap) : '';
+  $('edGapWrap').hidden = d.sections.length < 2;
+  $('edGap').innerHTML = edStepper('gap', 'Pause', d.gap, 'zwischen zwei Formen');
   if (d.roles === 'mutual') {
     times += '<div class="field-col"><span class="lbl">Wechselsignal<small>kurzer Ton als Erinnerung zum Tauschen</small></span><div class="seg" role="radiogroup" aria-label="Wechselsignal">' +
       SIGNALS.map(([v, t]) => '<button type="button" role="radio" data-signal="' + v + '" aria-checked="' + (d.signal === v) + '">' + t + '</button>').join('') + '</div></div>';
@@ -1064,7 +1065,6 @@ function renderEditor() {
   }
   $('edTimes').innerHTML = times;
   $('edSections').innerHTML = d.sections.map((x, i) =>
-    (i && d.gap ? '<div class="sec-gap">Pause ' + fmt(d.gap) + '</div>' : '') +
     '<div class="sec-row"><button type="button" class="sec-up" data-secup="' + i + '" aria-label="' + esc(x.name) + ' nach oben"' + (i ? '' : ' disabled') + '>↑</button>' +
     '<span class="nm">' + (i + 1) + ' · ' + esc(x.name) + '</span><span class="stepper">' +
     '<button type="button" data-sec="' + i + '" data-d="-1" aria-label="' + esc(x.name) + ' kürzer">−</button><output>' + fmt(x.dur) + '</output>' +
