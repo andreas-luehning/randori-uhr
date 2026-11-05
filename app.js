@@ -1,25 +1,25 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '53';
+const APP_VERSION = '54';
 
 /* ================= Vorlagen & Speicher ================= */
 
 // Namensschema wie im Training üblich: Randori 3 × 3 = 3 Runden à 3 Min,
 // Kakari-geiko 2 × 2 = 2 Runden à 2 Min: je Durchgang 1 Min Tori, dann Rollenwechsel, danach Partnerwechsel.
-// Modi: Randori, Kakari (eine Form mit Tori/Uke-Wechsel), Serie (intern 'ablauf': verbundene Formen), Zirkel.
+// Modi: Randori, Serie (intern 'ablauf': verbundene Formen, auch Kakari-geiko als einzelne Form), Zirkel.
+// Der frühere Modus „Kakari“ wird beim Laden in eine Serie mit einer Form umgewandelt.
 const BUILTIN = [
   { id: 'randori33', name: 'Randori 3 × 3', mode: 'randori', rounds: 3, work: 180, roundsMode: 'count', untilTime: '21:00',
     partnerChange: 'yes', transition: 'pausewait', pause: 30 },
-  { id: 'kakari22', name: 'Kakari-geiko 2 × 2', mode: 'kakari', dur: 60, swapPause: 5, partners: 2,
-    roundsMode: 'count', untilTime: '21:00', partnerChange: 'yes', transition: 'wait', pause: 30 },
+  { id: 'kakari22', name: 'Kakari-geiko 2 × 2', mode: 'ablauf', roles: 'ab', sections: [{ name: 'Kakari-geiko', dur: 60 }],
+    gap: 0, swapPause: 5, signal: 0, partners: 2, roundsMode: 'count', untilTime: '21:00', partnerChange: 'yes', transition: 'wait', pause: 30 },
 ];
 
 // Startwerte beim Wechsel des Modus (Zirkel hat keine eigene Vorlage)
 const ABLAUF_EXAMPLE = { name: 'Uchi-komi + Ne-waza', sections: [{ name: 'Uchi-komi', dur: 120 }, { name: 'Ne-waza', dur: 60 }] };
 const MODE_DEFAULTS = {
   randori: BUILTIN[0],
-  kakari: BUILTIN[1],
   ablauf: { id: null, name: ABLAUF_EXAMPLE.name, mode: 'ablauf', roles: 'ab', sections: ABLAUF_EXAMPLE.sections,
     gap: 10, swapPause: 5, signal: 0, partners: 2, roundsMode: 'count', untilTime: '21:00', partnerChange: 'yes', transition: 'wait', pause: 30 },
   zirkel: { id: null, mode: 'zirkel', rounds: 10, work: 40, rest: 20 },
@@ -58,11 +58,8 @@ function normalize(src) {
     const name = c.name ? c.name.replace(/^Kakari(?!-geiko)/, 'Kakari-geiko') : 'Kakari-geiko ' + mins(c.perPartner) + ' × ' + (c.partners || 2);
     c = Object.assign({}, c, { name, dur: Math.round(c.perPartner / 2) });
   }
-  // Serie (früher „Geiko“) mit nur der Form Kakari-geiko und A, dann B → eigener Modus Kakari
-  if (c.mode === 'ablauf' && Array.isArray(c.sections) && c.sections.length === 1 && c.sections[0] &&
-      c.sections[0].name === 'Kakari-geiko' && (c.roles || 'ab') === 'ab') {
-    c = Object.assign({}, c, { mode: 'kakari', dur: c.sections[0].dur });
-  }
+  // Früherer Modus Kakari → Serie mit der einen Form Kakari-geiko (A, dann B)
+  if (c.mode === 'kakari') c = kakariAsSerie(Object.assign({ dur: 60 }, c));
   if (!['randori', 'kakari', 'ablauf', 'zirkel'].includes(c.mode)) return clone(BUILTIN[0]);
   if (c.mode === 'ablauf') {
     if (!Array.isArray(c.sections) || !c.sections.length) Object.assign(c, clone(ABLAUF_EXAMPLE));
@@ -894,7 +891,7 @@ function renderSetup() {
   $('btnSavePreset').classList.toggle('attention', editedSinceSave);
 
   const all_presets = BUILTIN.concat(customPresets);
-  $('presetList').innerHTML = '<button type="button" class="preset preset-new" data-newpreset="1"><b>+ Neu</b><span>Randori, Kakari, Serie oder Zirkel</span></button>' +
+  $('presetList').innerHTML = '<button type="button" class="preset preset-new" data-newpreset="1"><b>+ Neu</b><span>Randori, Serie oder Zirkel</span></button>' +
     all_presets.map((p) => {
     const custom = !BUILTIN.includes(p);
     return '<button type="button" class="preset" data-preset="' + esc(p.id) + '" aria-pressed="' + (p.id === selectedPresetId) + '">' +
