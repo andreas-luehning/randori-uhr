@@ -598,3 +598,5 @@ html[data-theme] .until input { color-scheme: dark; }
 /* Pause im Ablauf: an den Formzeilen ausrichten (Platz für ↑ links und × rechts) */
 #edGap .field { padding: 0 62px 0 58px; }
 #edGap .field .lbl { font-size: 17px; }
+.sec-gap { margin: -6px 0; padding-left: 58px; font-size: 14px; color: var(--muted); }
+.sec-gap::before { content: '⋯ '; }
