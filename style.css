@@ -619,9 +619,7 @@ html[data-theme] .until input { color-scheme: dark; }
   .ablauf-card { padding: 12px; }
   #editor .bar h1 { font-size: 22px; }
   .sec-row { grid-template-columns: auto auto 1fr auto; grid-template-areas: "nm nm nm st" "up del . st"; row-gap: 0; column-gap: 4px; padding: 8px 10px 4px 16px; }
-  .sec-row .sec-up, .sec-row .sec-del { width: 36px; height: 30px; margin: 2px 4px 2px 0; border: 1px solid var(--line); border-radius: 8px;
-    display: grid; place-items: center; font-size: 15px; }
-  .sec-row .sec-del svg { width: 17px; height: 17px; }
+
   .sec-row .sec-up { grid-area: up; }
   .sec-row .nm { grid-area: nm; }
   .sec-row .sec-del { grid-area: del; }
@@ -647,3 +645,8 @@ html[data-theme] .until input { color-scheme: dark; }
   .panel-scroll { overflow: visible; flex: none; }
 }
 @media (max-width: 600px) { .panel-scroll { gap: 18px; } }
+
+/* Verschieben und Löschen: überall kleine Knöpfe mit dünnem Rand */
+.sec-row .sec-up, .sec-row .sec-del { width: 36px; height: 30px; margin: 2px 4px 2px 0; border: 1px solid var(--line); border-radius: 8px;
+  background: transparent; color: var(--muted); display: grid; place-items: center; font-size: 15px; }
+.sec-row .sec-del svg { width: 17px; height: 17px; }

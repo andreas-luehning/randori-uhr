@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '61';
+const APP_VERSION = '62';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -31,7 +31,7 @@ const PARTNER_CHANGE = [['yes', 'Ja'], ['no', 'Nein'], ['call', 'Nach Ansage']];
 const OPEN_ROUNDS = 500; // Obergrenze für „offen“ / „bis Uhrzeit“, wird praktisch nie erreicht
 
 // Rollen im Ablauf: A komplett, dann B / abschnittsweise abwechseln / wechselseitig ohne feste Rollen
-const ROLES = [['ab', 'A komplett, dann B'], ['section', 'Formweise'], ['mutual', 'Wechselseitig']];
+const ROLES = [['ab', 'A komplett, dann B'], ['section', 'Nach jedem Abschnitt'], ['mutual', 'Wechselseitig']];
 const SIGNALS = [[0, 'Aus'], [15, '0:15'], [30, '0:30'], [60, '1:00']];
 // Übungsformen in DJB-Schreibweise: erster Bestandteil groß, Rest klein, mit Bindestrich
 const SECTION_NAMES = ['Tandoku-renshu', 'Ukemi', 'Uchi-komi', 'Nage-komi', 'Yakusoku-geiko', 'Kakari-geiko', 'Butsukari-geiko', 'Randori', 'Bodenrandori', 'Ne-waza'];
@@ -144,6 +144,7 @@ function sameConfig(a, b) {
   return JSON.stringify(x) === JSON.stringify(y);
 }
 
+const THEMES = [['klassisch', 'Klassisch'], ['aquarell', 'Aquarell'], ['magie', 'Magie']];
 const DEFAULT_SETTINGS = { volume: 0.9, warn: 10, lead: 5, media: false, theme: 'klassisch', signal: 'gong', warnType: 'piep', signalCount: 'multi' };
 const SIGNAL_COUNTS = [['multi', 'Start 1× · Ende 2×'], ['single', 'Immer 1×']];
 const SIGNAL_TYPES = [['gong', 'Gong'], ['ding', 'Ding'], ['pfiff', 'Pfiff'], ['hupe', 'Hupe']];
@@ -973,7 +974,7 @@ function renderSettings() {
   $('setSignal').innerHTML = SIGNAL_TYPES.map(([v, t]) => '<button type="button" role="radio" data-signaltype="' + v + '" aria-checked="' + (settings.signal === v) + '">' + t + '</button>').join('');
   $('setSignalCount').innerHTML = SIGNAL_COUNTS.map(([v, t]) => '<button type="button" role="radio" data-signalcount="' + v + '" aria-checked="' + (settings.signalCount === v) + '">' + t + '</button>').join('');
   $('setWarnType').innerHTML = WARN_TYPES.map(([v, t]) => '<button type="button" role="radio" data-warntype="' + v + '" aria-checked="' + (settings.warnType === v) + '">' + t + '</button>').join('');
-  $('setTheme').value = settings.theme;
+  $('setTheme').innerHTML = THEMES.map(([v, t]) => '<button type="button" role="radio" data-themeval="' + v + '" aria-checked="' + (settings.theme === v) + '">' + t + '</button>').join('');
   $('setVolume').value = settings.volume;
   $('setWarn').value = String(settings.warn);
   $('setLead').value = String(settings.lead);
@@ -1045,7 +1046,7 @@ function renderEditor() {
   $('edRoles').innerHTML = ROLES.map(([v, t]) => '<button type="button" role="radio" data-roles="' + v + '" aria-checked="' + (d.roles === v) + '">' + t + '</button>').join('');
   $('edRolesHint').textContent = {
     ab: 'Erst ist Partner A in der ganzen Serie Tori, dann Partner B.',
-    section: 'Jede Form erst mit Partner A als Tori, dann mit Partner B.',
+    section: 'Jeder Abschnitt erst mit Partner A als Tori, dann mit Partner B.',
     mutual: 'Jede Form läuft einmal, die Paare wechseln sich selbst ab.',
   }[d.roles];
   const prev = roundPreview(d);
@@ -1254,7 +1255,11 @@ $('btnStop').addEventListener('pointerdown', (e) => {
 }));
 $('btnStop').addEventListener('contextmenu', (e) => e.preventDefault());
 
-$('setTheme').addEventListener('change', (e) => { settings.theme = e.target.value; saveSettings(); applyTheme(); });
+$('setTheme').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-themeval]');
+  if (!b) return;
+  settings.theme = b.dataset.themeval; saveSettings(); applyTheme(); renderSettings();
+});
 $('setVolume').addEventListener('input', (e) => { settings.volume = Number(e.target.value); saveSettings(); });
 $('setWarn').addEventListener('change', (e) => { settings.warn = Number(e.target.value); saveSettings(); });
 $('setLead').addEventListener('change', (e) => { settings.lead = Number(e.target.value); saveSettings(); });

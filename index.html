@@ -77,14 +77,10 @@
     <button id="btnSettingsBack" class="chip" type="button">Fertig</button>
   </header>
   <div class="settings-list">
-    <label class="row">
+    <div class="row">
       <span>Farbschema</span>
-      <select id="setTheme">
-        <option value="klassisch">Klassisch (Blau / Orange)</option>
-        <option value="aquarell">Aquarell (Violett / Gelb / Orangerot / Blau)</option>
-        <option value="magie">Magie (Nachtblau / Mint / Mauve / Eisblau)</option>
-      </select>
-    </label>
+      <span id="setTheme" class="seg sound-seg" role="radiogroup" aria-label="Farbschema"></span>
+    </div>
     <label class="row">
       <span>Lautstärke</span>
       <input id="setVolume" type="range" min="0" max="1" step="0.05">
