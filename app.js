@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '74';
+const APP_VERSION = '75';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -119,7 +119,10 @@ function sanitizeConfig(c) {
   return Object.assign({
     id, name: text(c.name, 40, secs.map((x) => x.name).join(' + ').slice(0, 40)), mode: 'ablauf',
     roles: pick(c.roles, ids(ROLES), 'ab'), sections: secs,
-    gap: num(c.gap, 0, 60, 10), swapPause: num(c.swapPause, 0, 60, 5), signal: pick(Number(c.signal), [0, 15, 30, 60], 0),
+    gap: num(c.gap, 0, 60, 10),
+    // Pausen zwischen den Abschnitten: aus, feste Zeit oder Warten auf „Hajime“
+    gapMode: pick(c.gapMode, ['off', 'time', 'wait'], num(c.gap, 0, 60, 10) > 0 ? 'time' : 'off'),
+    swapPause: num(c.swapPause, 0, 60, 5), signal: pick(Number(c.signal), [0, 15, 30, 60], 0),
     partners: num(c.partners, 1, 30, 2),
   }, common);
 }
@@ -274,7 +277,8 @@ function buildAblauf(c, segs, transition) {
         const roleChange = o.attacker && prev.attacker !== o.attacker;
         const base = { round: p, total: n, from: t, partDur: roundDur, attacker: o.attacker, nextName: o.sec.name };
         if (roleChange && c.swapPause > 0) segs.push(Object.assign({ type: 'swap', dur: c.swapPause }, base));
-        else if (!roleChange && c.gap > 0) segs.push(Object.assign({ type: 'pause', dur: c.gap, gap: true }, base));
+        else if (!roleChange && c.gapMode === 'wait') segs.push(Object.assign({ type: 'wait', dur: null, gap: true }, base));
+        else if (!roleChange && c.gapMode === 'time' && c.gap > 0) segs.push(Object.assign({ type: 'pause', dur: c.gap, gap: true }, base));
       }
       const swapStart = !!(prev && o.attacker && prev.attacker !== o.attacker && !(c.swapPause > 0));
       segs.push({ type: 'work', dur: o.sec.dur, round: p, total: n, attacker: o.attacker, section: o.sec.name,
@@ -625,6 +629,7 @@ function nextText(i) {
   // Bei Randori und Geiko ist die Pause zugleich die Zeit für den Partnerwechsel (je nach Einstellung)
   if (n.type === 'pause') return c.mode === 'zirkel' || c.partnerChange !== 'yes' ? 'Pause ' + fmt(n.dur) : 'Pause + Partnerwechsel · ' + fmt(n.dur);
   if (n.type === 'swap') return 'Rollenwechsel';
+  if (n.type === 'wait' && n.gap) return 'Warten auf „Hajime“ · dann ' + n.nextName;
   if (n.type === 'wait') {
     const before = run.segs[i - 1];
     return before && before.type === 'pause' || c.partnerChange !== 'yes' ? 'Uhr wartet auf „Hajime“' : 'Partnerwechsel · Uhr wartet auf „Hajime“';
@@ -718,7 +723,10 @@ function render() {
 
   const isWait = type === 'wait';
   $('waitBox').hidden = !isWait;
-  if (isWait) {
+  if (isWait && s.gap) {
+    $('waitTitle').textContent = 'Gleich: ' + s.nextName;
+    $('waitHint').textContent = 'Wenn alle bereit sind, hier tippen:';
+  } else if (isWait) {
     const pc = c.partnerChange || 'yes';
     $('waitTitle').textContent = pc === 'yes' ? 'Neue Partner suchen' : 'Bereit?';
     $('waitHint').textContent = pc === 'yes' ? 'Haben alle einen Partner? Dann hier tippen:'
@@ -832,7 +840,7 @@ function renderSetup() {
   const html = FIELDS[config.mode].filter((f) => !f.when || f.when(config)).map((f) => {
     if (f.type === 'ablauf') {
       const c = config;
-      const info = (c.sections.length > 1 && c.gap ? 'Pause ' + fmt(c.gap) + ' · ' : '') +
+      const info = (c.sections.length > 1 && c.gapMode === 'wait' ? 'Warten zwischen den Abschnitten · ' : c.sections.length > 1 && c.gapMode === 'time' && c.gap ? 'Pause ' + fmt(c.gap) + ' · ' : '') +
         (c.roles !== 'mutual' ? 'Rollenwechsel ' + fmt(c.swapPause) : c.signal ? 'Wechselsignal alle ' + fmt(c.signal) : 'ohne Wechselsignal');
       // Zeiten direkt hier einstellbar; „Bearbeiten“ nur für den Aufbau
       // Aufbau: Name und Rollen oben, Zeiten in der Mitte, „Serie bearbeiten“ als eigene Zeile unten
@@ -1060,13 +1068,13 @@ function renderEditor() {
   let times = '';
   $('edGapWrap').hidden = d.sections.length < 2;
   // Pausen: Dauer einstellen und mit dem Schalter am Ende alle Pausen ein- oder ausschalten
-  const gapOn = d.gap > 0;
-  $('edGap').innerHTML = '<div class="sec-row gap-row' + (gapOn ? '' : ' off') + '"><span class="sec-sp" aria-hidden="true"></span>' +
-    '<span class="nm">Dauer</span><span class="stepper">' +
-    '<button type="button" data-ed="gap" data-d="-1" aria-label="Pausen kürzer"' + (gapOn ? '' : ' disabled') + '>−</button>' +
-    '<output>' + (gapOn ? fmt(d.gap) : 'aus') + '</output>' +
-    '<button type="button" data-ed="gap" data-d="1" aria-label="Pausen länger"' + (gapOn ? '' : ' disabled') + '>+</button></span>' +
-    '<button type="button" class="gap-toggle" data-gaptoggle="1" role="switch" aria-checked="' + gapOn + '" aria-label="Pausen ' + (gapOn ? 'ausschalten' : 'einschalten') + '"><span></span></button></div>';
+  const gm = d.gapMode;
+  $('edGap').innerHTML = '<div class="gap-box"><div class="seg" role="radiogroup" aria-label="Pausen zwischen den Abschnitten">' +
+    [['off', 'Aus'], ['time', 'Zeit'], ['wait', 'Warten']].map(([v, t]) => '<button type="button" role="radio" data-gapmode="' + v + '" aria-checked="' + (gm === v) + '">' + t + '</button>').join('') + '</div>' +
+    (gm === 'time' ? '<div class="sec-row gap-row"><span class="sec-sp" aria-hidden="true"></span><span class="nm">Dauer</span><span class="stepper">' +
+      '<button type="button" data-ed="gap" data-d="-1" aria-label="Pausen kürzer">−</button><output>' + fmt(d.gap) + '</output>' +
+      '<button type="button" data-ed="gap" data-d="1" aria-label="Pausen länger">+</button></span><span class="sec-sp" aria-hidden="true"></span></div>'
+      : gm === 'wait' ? '<small class="muted gap-hint">Die Uhr hält zwischen den Abschnitten an, bis du „Hajime“ tippst.</small>' : '') + '</div>';
   if (d.roles === 'mutual') {
     times += '<div class="field-col"><span class="lbl">Wechselsignal<small>kurzer Ton als Erinnerung zum Tauschen</small></span><div class="seg" role="radiogroup" aria-label="Wechselsignal">' +
       SIGNALS.map(([v, t]) => '<button type="button" role="radio" data-signal="' + v + '" aria-checked="' + (d.signal === v) + '">' + t + '</button>').join('') + '</div></div>';
@@ -1075,7 +1083,7 @@ function renderEditor() {
   }
   $('edTimes').innerHTML = times;
   $('edSections').innerHTML = d.sections.map((x, i) =>
-    (i && d.gap ? '<div class="sec-gap">Pause ' + fmt(d.gap) + '</div>' : '') +
+    (i && d.gapMode === 'wait' ? '<div class="sec-gap">Warten auf „Hajime“</div>' : i && d.gapMode === 'time' && d.gap ? '<div class="sec-gap">Pause ' + fmt(d.gap) + '</div>' : '') +
     '<div class="sec-row"><button type="button" class="sec-up" data-secup="' + i + '" aria-label="' + esc(x.name) + ' nach oben"' + (i ? '' : ' disabled') + '>↑</button>' +
     '<span class="nm"><span class="sec-no">' + (i + 1) + ' · </span>' + esc(x.name) + '</span><span class="stepper">' +
     '<button type="button" data-sec="' + i + '" data-d="-1" aria-label="' + esc(x.name) + ' kürzer">−</button><output>' + fmt(x.dur) + '</output>' +
@@ -1098,11 +1106,12 @@ function editorClick(t) {
   const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
   if (t.dataset.roles) { d.roles = t.dataset.roles; renderEditor(); return; }
   if (t.dataset.signal != null) { d.signal = Number(t.dataset.signal); renderEditor(); return; }
-  if (t.dataset.gaptoggle) {
-    if (d.gap > 0) { d.gapLast = d.gap; d.gap = 0; } else d.gap = d.gapLast || 10;
+  if (t.dataset.gapmode) {
+    d.gapMode = t.dataset.gapmode;
+    if (d.gapMode === 'time' && !(d.gap > 0)) d.gap = 10;
     renderEditor(); return;
   }
-  if (t.dataset.ed) { const k = t.dataset.ed; d[k] = clamp(d[k] + Number(t.dataset.d) * 5, 0, 60); renderEditor(); return; }
+  if (t.dataset.ed) { const k = t.dataset.ed; d[k] = clamp(d[k] + Number(t.dataset.d) * 5, k === 'gap' ? 5 : 0, 60); renderEditor(); return; }
   if (t.dataset.sec) { const x = d.sections[Number(t.dataset.sec)]; x.dur = clamp(x.dur + Number(t.dataset.d) * 15, 15, 900); renderEditor(); return; }
   if (t.dataset.secdel) { if (d.sections.length > 1) d.sections.splice(Number(t.dataset.secdel), 1); renderEditor(); return; }
   if (t.dataset.secup) { const i = Number(t.dataset.secup); if (i > 0) d.sections.splice(i - 1, 0, d.sections.splice(i, 1)[0]); renderEditor(); return; }

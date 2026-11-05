@@ -714,3 +714,9 @@ html[data-theme] .until input { color-scheme: dark; }
 /* Lange Namen/Beschreibungen umbrechen statt die Seite zu verbreitern */
 .preset { min-width: 0; }
 html, body { overflow-x: hidden; }
+
+/* Pausen zwischen den Abschnitten: Aus · Zeit · Warten */
+.gap-box { display: flex; flex-direction: column; gap: 8px; }
+.gap-row .sec-sp { width: 36px; }
+.gap-hint { padding: 0 4px; }
+@media (max-width: 600px) { .gap-row .sec-sp { width: 32px; } }
