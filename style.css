@@ -688,3 +688,11 @@ html[data-theme] .until input { color-scheme: dark; }
 #edGap .field { background: transparent; border: 1px dashed var(--line); }
 #edGapWrap { display: flex; flex-direction: column; gap: 8px; margin: 10px 0 6px; }
 #edGapWrap[hidden] { display: none; }
+/* Im Editor alle Zeitregler gleich groß (Abschnitte, Pausen, Rollenwechsel) */
+#edTimes .stepper { gap: 6px; }
+#edTimes .stepper button { width: 36px; height: 36px; font-size: 20px; }
+#edTimes .stepper output { min-width: 56px; font-size: 20px; }
+@media (max-width: 600px) {
+  #edTimes .stepper button { width: 34px; height: 34px; font-size: 18px; }
+  #edTimes .stepper output { min-width: 48px; font-size: 18px; }
+}
