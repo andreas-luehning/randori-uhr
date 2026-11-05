@@ -709,3 +709,5 @@ html[data-theme] .until input { color-scheme: dark; }
 .gap-toggle[aria-checked="true"] span { background: var(--accent); }
 .gap-toggle[aria-checked="true"] span::after { left: 16px; }
 @media (max-width: 600px) { .gap-row .sec-sp { width: 32px; } .gap-toggle { width: 32px; } .gap-toggle span { width: 30px; } .gap-toggle[aria-checked="true"] span::after { left: 12px; } }
+/* Einstellungen (Tablet): alle Knopfleisten gleich breit und rechts bündig */
+@media (min-width: 601px) { .settings-list .sound-seg { width: 310px; grid-auto-columns: 1fr; } }
