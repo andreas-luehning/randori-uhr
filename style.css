@@ -599,3 +599,34 @@ html[data-theme] .until input { color-scheme: dark; }
 #edGapWrap[hidden] { display: none; }
 .sec-gap { margin: -6px 0; padding-left: 58px; font-size: 14px; color: var(--muted); }
 .sec-gap::before { content: '⋯ '; }
+
+/* Handy: kompaktere Kopfzeile, Vorlagen als Liste, ohne Rahmen um die Einstellungen */
+.chip-ico { display: none; width: 24px; height: 24px; }
+@media (max-width: 600px) {
+  .bar { flex-wrap: nowrap; }
+  .bar h1 { font-size: 22px; }
+  #btnSettings .chip-ico { display: block; }
+  #btnSettings .chip-txt { display: none; }
+  #btnSettings { width: 48px; padding: 0; display: grid; place-items: center; }
+  #btnFullscreen { display: none; }
+  .preset-list { grid-template-columns: 1fr; gap: 8px; }
+  .preset { min-height: 0; padding: 10px 14px; gap: 2px; }
+  .preset span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .preset.preset-new { flex-direction: row; align-items: baseline; gap: 10px; }
+  .setup-grid .panel, .panel { background: transparent; border: 0; padding: 0; }
+  #editor .bar h1 { font-size: 22px; }
+  .sec-row { grid-template-columns: auto 1fr auto; grid-template-areas: "up nm del" "up st st"; row-gap: 6px; }
+  .sec-row .sec-up { grid-area: up; }
+  .sec-row .nm { grid-area: nm; }
+  .sec-row .sec-del { grid-area: del; }
+  .sec-row .stepper { grid-area: st; justify-self: end; }
+  .sec-gap { padding-left: 52px; }
+}
+@media (max-width: 600px) {
+  #editor .bar h1 { font-size: 20px; }
+  .ed-pills .chip { min-height: 40px; padding: 0 14px; font-size: 15px; }
+}
+@media (max-width: 600px) {
+  /* ohne Rahmen etwas mehr Luft zwischen den Blöcken */
+  .panel { gap: 18px; margin-top: 8px; }
+}
