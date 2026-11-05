@@ -96,27 +96,17 @@
       <span>Vorwarnung vor Rundenende<small>Antippen spielt den Klang ab</small></span>
       <span class="btns">
         <span id="setWarnType" class="seg sound-seg" role="radiogroup" aria-label="Klang der Vorwarnung"></span>
-        <select id="setWarn" aria-label="Zeitpunkt der Vorwarnung">
-          <option value="0">aus</option>
-          <option value="10">10 s</option>
-          <option value="15">15 s</option>
-          <option value="30">30 s</option>
-        </select>
+        <span id="setWarn" class="seg sound-seg" role="radiogroup" aria-label="Zeitpunkt der Vorwarnung"></span>
       </span>
     </div>
     <div class="row">
       <span>Wechselsignal<small>Rollenwechsel und Wechsel im wechselseitigen Üben</small></span>
       <button class="chip" type="button" data-sound="swap">Anhören</button>
     </div>
-    <label class="row">
+    <div class="row">
       <span>Vorlauf vor der ersten Runde</span>
-      <select id="setLead">
-        <option value="0">keiner</option>
-        <option value="5">5 s</option>
-        <option value="10">10 s</option>
-        <option value="15">15 s</option>
-      </select>
-    </label>
+      <span id="setLead" class="seg sound-seg" role="radiogroup" aria-label="Vorlauf vor der ersten Runde"></span>
+    </div>
     <label class="row">
       <span>Medientasten (Play/Pause) für Handsender<small>spielt dafür im Training einen stummen Ton</small></span>
       <input id="setMedia" type="checkbox">

@@ -174,9 +174,28 @@ Rollen = Tori, Uke, dritte Person.
   mit Tori A, dann Tori B (intern über die Serien-Logik); Serie = verbundene Formen. „Geiko“ → „Serie“,
   „Abschnitte“ → „Formen“, „je Partner“ → „je Durchgang“, „Abschnittsweise“ → „Formweise“.
   Alte Daten werden automatisch umgewandelt (Geiko mit nur Kakari-geiko → Kakari).
-- Schritt b) offen: Form und Inhalt trennen. Formen: Tandoku-renshu, Uchi-komi, Nage-komi, Yakusoku-geiko,
+- Schritt b) zurückgestellt (siehe Stand 05.11.): Form und Inhalt trennen. Formen: Tandoku-renshu, Uchi-komi, Nage-komi, Yakusoku-geiko,
   Kakari-geiko, Butsukari-geiko, Randori. Inhalte (optional): Ukemi, Kumi-kata, Tachi-waza, Ne-waza.
   Anzeige z. B. „Uchi-komi · Ne-waza“; „Bodenrandori“ → „Randori · Ne-waza“.
 - Später: 3er-Rotation (Tori, Uke, dritte Person; drei Durchgänge, jeder einmal Tori), z. B. für Halte-Uchi-komi
   oder ungerade Teilnehmerzahl.
 - Später/optional: Merkmal „Situation offen/geschlossen“ je Form.
+
+### Stand Ende 05.11.2026 (Version 72)
+
+Umgesetzt heute:
+- Kakari-Reiter entfernt: Kakari-geiko ist eine Serie mit einem Abschnitt; Vorlage „Kakari-geiko 2 × 2“ bleibt,
+  alte Kakari-Vorlagen werden beim Laden umgewandelt.
+- Begriffe in der Oberfläche: Baustein im Ablauf = **Abschnitt**; Chips heißen „Formen und Inhalte“ (eine Liste,
+  keine Trennung). Tori/Uke wechseln: „Nach der Serie · Nach jedem Abschnitt · Wechselseitig“.
+- Pausen im Editor: graue „⋯ Pause“-Zeilen zwischen den Abschnitten, darunter „Pausen · Dauer“ mit Ein/Aus-Schalter.
+- Formzeilen überall in einer Reihe (↑, Name, Zeit, Papierkorb), gleiche Knopfgrößen je Seite.
+- Handy: Einstellungs-Symbol, Vorlagen als Liste, schmalerer Rahmen; Tablet: Start-Knopf fest unten statt schwebend.
+- Farbschema, Vorwarnung und Vorlauf als Knöpfe statt Auswahllisten (Android-Auswahlliste sprang).
+- Neu-Dialog beschreibt, was man mit Randori, Serie und Zirkel macht.
+
+Offen:
+- Auf dem Tablet im Training testen (Pages auf `serie` stellen); danach `serie` nach `main` übernehmen (nur mit Freigabe).
+- Handy-Ansicht oben/unten etwas eng (Feinschliff, niedrige Priorität).
+- Form/Inhalt-Kombination („Randori · Ne-waza“) vorerst nicht nötig; Kumi-kata/Tachi-waza als Chips bei Bedarf.
+- Später: 3er-Rotation, README/Tests im Repo, Kontaktadresse unter „Über die App“, kurze Hilfe beim ersten Start.

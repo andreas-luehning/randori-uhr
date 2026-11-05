@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '71';
+const APP_VERSION = '72';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -978,8 +978,9 @@ function renderSettings() {
   $('setWarnType').innerHTML = WARN_TYPES.map(([v, t]) => '<button type="button" role="radio" data-warntype="' + v + '" aria-checked="' + (settings.warnType === v) + '">' + t + '</button>').join('');
   $('setTheme').innerHTML = THEMES.map(([v, t]) => '<button type="button" role="radio" data-themeval="' + v + '" aria-checked="' + (settings.theme === v) + '">' + t + '</button>').join('');
   $('setVolume').value = settings.volume;
-  $('setWarn').value = String(settings.warn);
-  $('setLead').value = String(settings.lead);
+  const timeSeg = (key, list) => list.map((v) => '<button type="button" role="radio" data-' + key + '="' + v + '" aria-checked="' + (settings[key] === v) + '">' + (v ? fmt(v) : 'Aus') + '</button>').join('');
+  $('setWarn').innerHTML = timeSeg('warn', [0, 10, 15, 30]);
+  $('setLead').innerHTML = timeSeg('lead', [0, 5, 10, 15]);
   $('setMedia').checked = !!settings.media;
 }
 
@@ -1274,8 +1275,13 @@ $('setTheme').addEventListener('click', (e) => {
   settings.theme = b.dataset.themeval; saveSettings(); applyTheme(); renderSettings();
 });
 $('setVolume').addEventListener('input', (e) => { settings.volume = Number(e.target.value); saveSettings(); });
-$('setWarn').addEventListener('change', (e) => { settings.warn = Number(e.target.value); saveSettings(); });
-$('setLead').addEventListener('change', (e) => { settings.lead = Number(e.target.value); saveSettings(); });
+['warn', 'lead'].forEach((key) => {
+  $(key === 'warn' ? 'setWarn' : 'setLead').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-' + key + ']');
+    if (!b) return;
+    settings[key] = Number(b.dataset[key]); saveSettings(); renderSettings();
+  });
+});
 $('setMedia').addEventListener('change', (e) => { settings.media = e.target.checked; saveSettings(); if (settings.media) mediaOn(); else mediaOff(); });
 
 /* Handsender / Tastatur */
