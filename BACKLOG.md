@@ -163,3 +163,20 @@ Struktur (von klein nach groß):
 - Content Security Policy: nur eigener Code darf laufen.
 - „Über die App“ in den Einstellungen (Name, Zweck, von Andreas Lühning, Datenschutz-Satz, Version).
 - Update-Hinweis „Neue Version verfügbar – tippen zum Laden“ (nicht während des Trainings).
+
+## Branch `serie` (Begriffe nach Dokument „Begriffsdefinition Serie“, Stand 05.11.2026)
+
+Grundlage: „Geiko“ ist im DJB-Sprachgebrauch an bestimmte Formen gebunden (Kakari-, Yakusoku-, Butsukari-geiko)
+und kein Oberbegriff. Container = **Serie**, Baustein = **Form**, Thema = **Inhalt**, getimerte Ebene = **Durchgang**,
+Rollen = Tori, Uke, dritte Person.
+
+- (umgesetzt in Version 43, Schritt a) Reiter Randori · Kakari · Serie · Zirkel. Kakari = eine Form „Kakari-geiko“
+  mit Tori A, dann Tori B (intern über die Serien-Logik); Serie = verbundene Formen. „Geiko“ → „Serie“,
+  „Abschnitte“ → „Formen“, „je Partner“ → „je Durchgang“, „Abschnittsweise“ → „Formweise“.
+  Alte Daten werden automatisch umgewandelt (Geiko mit nur Kakari-geiko → Kakari).
+- Schritt b) offen: Form und Inhalt trennen. Formen: Tandoku-renshu, Uchi-komi, Nage-komi, Yakusoku-geiko,
+  Kakari-geiko, Butsukari-geiko, Randori. Inhalte (optional): Ukemi, Kumi-kata, Tachi-waza, Ne-waza.
+  Anzeige z. B. „Uchi-komi · Ne-waza“; „Bodenrandori“ → „Randori · Ne-waza“.
+- Später: 3er-Rotation (Tori, Uke, dritte Person; drei Durchgänge, jeder einmal Tori), z. B. für Halte-Uchi-komi
+  oder ungerade Teilnehmerzahl.
+- Später/optional: Merkmal „Situation offen/geschlossen“ je Form.

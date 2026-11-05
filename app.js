@@ -1,27 +1,29 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '42';
+const APP_VERSION = '44';
 
 /* ================= Vorlagen & Speicher ================= */
 
 // Namensschema wie im Training üblich: Randori 3 × 3 = 3 Runden à 3 Min,
-// Kakari-geiko 2 × 2 = 2 Runden, je Partner 1 Min Tori, dann Rollenwechsel, danach Partnerwechsel.
-// Kakari-geiko ist eine Vorlage im Modus „Geiko“ (intern 'ablauf').
+// Kakari-geiko 2 × 2 = 2 Runden à 2 Min: je Durchgang 1 Min Tori, dann Rollenwechsel, danach Partnerwechsel.
+// Modi: Randori, Kakari (eine Form mit Tori/Uke-Wechsel), Serie (intern 'ablauf': verbundene Formen), Zirkel.
 const BUILTIN = [
   { id: 'randori33', name: 'Randori 3 × 3', mode: 'randori', rounds: 3, work: 180, roundsMode: 'count', untilTime: '21:00',
     partnerChange: 'yes', transition: 'pausewait', pause: 30 },
-  { id: 'kakari22', name: 'Kakari-geiko 2 × 2', mode: 'ablauf', roles: 'ab', sections: [{ name: 'Kakari-geiko', dur: 60 }],
-    gap: 0, swapPause: 5, signal: 0, partners: 2, roundsMode: 'count', untilTime: '21:00', partnerChange: 'yes', transition: 'wait', pause: 30 },
+  { id: 'kakari22', name: 'Kakari-geiko 2 × 2', mode: 'kakari', dur: 60, swapPause: 5, partners: 2,
+    roundsMode: 'count', untilTime: '21:00', partnerChange: 'yes', transition: 'wait', pause: 30 },
 ];
 
 // Startwerte beim Wechsel des Modus (Zirkel hat keine eigene Vorlage)
+const ABLAUF_EXAMPLE = { name: 'Uchi-komi + Ne-waza', sections: [{ name: 'Uchi-komi', dur: 120 }, { name: 'Ne-waza', dur: 60 }] };
 const MODE_DEFAULTS = {
   randori: BUILTIN[0],
-  ablauf: BUILTIN[1],
+  kakari: BUILTIN[1],
+  ablauf: { id: null, name: ABLAUF_EXAMPLE.name, mode: 'ablauf', roles: 'ab', sections: ABLAUF_EXAMPLE.sections,
+    gap: 10, swapPause: 5, signal: 0, partners: 2, roundsMode: 'count', untilTime: '21:00', partnerChange: 'yes', transition: 'wait', pause: 30 },
   zirkel: { id: null, mode: 'zirkel', rounds: 10, work: 40, rest: 20 },
 };
-const ABLAUF_EXAMPLE = { name: 'Uchi-komi + Ne-waza', sections: [{ name: 'Uchi-komi', dur: 120 }, { name: 'Ne-waza', dur: 60 }] };
 
 const ROUND_MODES = [['count', 'Anzahl'], ['open', 'Offen'], ['until', 'Bis Uhrzeit']];
 const TRANSITIONS = [['auto', 'Auto-Pause'], ['wait', 'Warten'], ['pausewait', 'Pause + Warten']];
@@ -29,7 +31,7 @@ const PARTNER_CHANGE = [['yes', 'Ja'], ['no', 'Nein'], ['call', 'Nach Ansage']];
 const OPEN_ROUNDS = 500; // Obergrenze für „offen“ / „bis Uhrzeit“, wird praktisch nie erreicht
 
 // Rollen im Ablauf: A komplett, dann B / abschnittsweise abwechseln / wechselseitig ohne feste Rollen
-const ROLES = [['ab', 'A komplett, dann B'], ['section', 'Abschnittsweise'], ['mutual', 'Wechselseitig']];
+const ROLES = [['ab', 'A komplett, dann B'], ['section', 'Formweise'], ['mutual', 'Wechselseitig']];
 const SIGNALS = [[0, 'Aus'], [15, '0:15'], [30, '0:30'], [60, '1:00']];
 // Übungsformen in DJB-Schreibweise: erster Bestandteil groß, Rest klein, mit Bindestrich
 const SECTION_NAMES = ['Tandoku-renshu', 'Ukemi', 'Uchi-komi', 'Nage-komi', 'Yakusoku-geiko', 'Kakari-geiko', 'Butsukari-geiko', 'Randori', 'Bodenrandori', 'Ne-waza'];
@@ -39,19 +41,29 @@ const MAX_SECTIONS = 8;
 function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
 // Anzahl Runden (= Partner) je Modus
-function roundsOf(c) { return c.mode === 'ablauf' ? c.partners : c.rounds; }
+function roundsOf(c) { return c.mode === 'ablauf' || c.mode === 'kakari' ? c.partners : c.rounds; }
+
+// Kakari läuft intern als Serie mit einer Form „Kakari-geiko“ (A, dann B)
+function kakariAsSerie(c) {
+  return Object.assign(clone(c), { mode: 'ablauf', roles: 'ab', sections: [{ name: 'Kakari-geiko', dur: c.dur }], gap: 0, signal: 0 });
+}
 function isCounted(c) { return c.mode === 'zirkel' || !c.roundsMode || c.roundsMode === 'count'; }
 function plannedRounds(c) { return isCounted(c) ? roundsOf(c) : OPEN_ROUNDS; }
 
 // Alte und unvollständige Einstellungen auf den aktuellen Stand bringen (z. B. früherer Modus „Kakari“)
 function normalize(src) {
   let c = clone(src || BUILTIN[0]);
-  if (c.mode === 'kakari') {
-    const name = c.name ? c.name.replace(/^Kakari(?!-geiko)/, 'Kakari-geiko') : 'Kakari-geiko ' + mins(c.perPartner || 120) + ' × ' + (c.partners || 2);
-    c = { id: c.id || null, name, mode: 'ablauf', roles: 'ab', sections: [{ name: 'Kakari-geiko', dur: Math.max(15, Math.round((c.perPartner || 120) / 2)) }],
-      gap: 0, swapPause: c.swapPause != null ? c.swapPause : 5, signal: 0, partners: c.partners || 2, transition: c.transition || 'wait', pause: c.pause || 30 };
+  // Ganz alte Kakari-Daten (Zeit pro Partner, Rollenwechsel zur Hälfte)
+  if (c.mode === 'kakari' && c.dur == null && c.perPartner != null) {
+    const name = c.name ? c.name.replace(/^Kakari(?!-geiko)/, 'Kakari-geiko') : 'Kakari-geiko ' + mins(c.perPartner) + ' × ' + (c.partners || 2);
+    c = Object.assign({}, c, { name, dur: Math.round(c.perPartner / 2) });
   }
-  if (!['randori', 'ablauf', 'zirkel'].includes(c.mode)) return clone(BUILTIN[0]);
+  // Serie (früher „Geiko“) mit nur der Form Kakari-geiko und A, dann B → eigener Modus Kakari
+  if (c.mode === 'ablauf' && Array.isArray(c.sections) && c.sections.length === 1 && c.sections[0] &&
+      c.sections[0].name === 'Kakari-geiko' && (c.roles || 'ab') === 'ab') {
+    c = Object.assign({}, c, { mode: 'kakari', dur: c.sections[0].dur });
+  }
+  if (!['randori', 'kakari', 'ablauf', 'zirkel'].includes(c.mode)) return clone(BUILTIN[0]);
   if (c.mode === 'ablauf') {
     if (!Array.isArray(c.sections) || !c.sections.length) Object.assign(c, clone(ABLAUF_EXAMPLE));
     if (!ROLES.some((r) => r[0] === c.roles)) c.roles = 'ab';
@@ -96,6 +108,10 @@ function sanitizeConfig(c) {
   }
   if (c.mode === 'zirkel') {
     return { id, name: text(c.name, 40, ''), mode: 'zirkel', rounds: num(c.rounds, 1, 50, 10), work: num(c.work, 5, 600, 40), rest: num(c.rest, 0, 600, 20) };
+  }
+  if (c.mode === 'kakari') {
+    return Object.assign({ id, name: text(c.name, 40, ''), mode: 'kakari', dur: num(c.dur, 15, 900, 60),
+      swapPause: num(c.swapPause, 0, 60, 5), partners: num(c.partners, 1, 30, 2) }, common);
   }
   const sections = (Array.isArray(c.sections) ? c.sections : []).slice(0, MAX_SECTIONS)
     .map((x) => ({ name: text(x && x.name, 24, ''), dur: num(x && x.dur, 15, 900, 60) }))
@@ -177,6 +193,8 @@ function shortName(c) {
     return 'Randori ' + c.rounds + ' × ' + mins(c.work);
   }
   if (c.mode === 'ablauf') return c.name;
+  // Kakari-geiko 2 × 2: 2 Min mit einem Partner (je 1 Min Tori), 2 Runden
+  if (c.mode === 'kakari') return 'Kakari-geiko ' + mins(c.dur * 2) + ' × ' + (c.roundsMode === 'count' ? c.partners : '…');
   return 'Zirkel ' + c.work + '/' + c.rest + ' × ' + c.rounds;
 }
 
@@ -189,8 +207,9 @@ function roundsText(c) {
 
 function describe(c) {
   if (c.mode === 'randori') return roundsText(c) + ' à ' + fmt(c.work) + ' · ' + transitionText(c);
+  if (c.mode === 'kakari') return roundsText(c) + ' · je Durchgang ' + fmt(c.dur) + ' Tori';
   if (c.mode === 'ablauf') {
-    if (c.sections.length === 1 && c.roles !== 'mutual') return roundsText(c) + ' · je ' + fmt(c.sections[0].dur) + ' Tori';
+    if (c.sections.length === 1 && c.roles !== 'mutual') return c.sections[0].name + ' · ' + roundsText(c) + ' · je ' + fmt(c.sections[0].dur) + ' Tori';
     return ROLES.find((r) => r[0] === c.roles)[1] + ' · ' + c.sections.map((x) => x.name).join(' + ') + ' · ' + roundsText(c);
   }
   return c.rounds + ' Runden · ' + fmt(c.work) + ' Arbeit / ' + fmt(c.rest) + ' Pause';
@@ -222,6 +241,8 @@ function buildSegments(c) {
     }
   } else if (c.mode === 'ablauf') {
     buildAblauf(c, segs, transition);
+  } else if (c.mode === 'kakari') {
+    buildAblauf(kakariAsSerie(c), segs, transition);
   } else {
     for (let r = 1; r <= c.rounds; r++) {
       segs.push({ type: 'work', dur: c.work, round: r, total: c.rounds });
@@ -453,7 +474,8 @@ let timer = null;
 function startTraining() {
   ctx();
   const segs = buildSegments(config);
-  run = { segs, i: -1, endAt: 0, remaining: 0, paused: false, waitSince: 0, lastSec: null, cfg: clone(config), done: false,
+  run = { segs, i: -1, endAt: 0, remaining: 0, paused: false, waitSince: 0, lastSec: null, done: false,
+    cfg: config.mode === 'kakari' ? kakariAsSerie(config) : clone(config),
     untilTs: config.roundsMode === 'until' ? untilTimestamp(config.untilTime) : 0 };
   show('run');
   keepAwake();
@@ -670,7 +692,8 @@ function render() {
   // Kanji nur als Deko neben dem lesbaren Begriff
   if (c.mode === 'ablauf') {
     const kakari = c.sections.length === 1 && c.sections[0].name === 'Kakari-geiko';
-    $('runMode').innerHTML = esc(c.name) + jp(kakari ? '掛かり稽古' : '稽古');
+    // Kanji nur bei Kakari-geiko; „Serie“ ist ein deutscher Begriff
+    $('runMode').innerHTML = kakari ? esc(c.name || 'Kakari-geiko') + jp('掛かり稽古') : esc(c.name);
   } else {
     $('runMode').innerHTML = c.mode === 'zirkel' ? 'Zirkel' : 'Randori' + jp('乱取り');
   }
@@ -775,6 +798,14 @@ const FIELDS = {
     { k: 'transition', type: 'transition' },
     { k: 'pause', label: 'Pause', type: 'time', step: 5, min: 5, max: 300, when: (c) => c.transition !== 'wait' },
   ],
+  kakari: [
+    { k: 'dur', label: 'Zeit je Durchgang', type: 'time', step: 15, min: 15, max: 900, sub: () => 'erst Tori A, dann Tori B' },
+    { k: 'swapPause', label: 'Zeit für Rollenwechsel', type: 'time', step: 5, min: 0, max: 60 },
+    { k: 'partners', label: 'Runden', type: 'rounds', min: 1, max: 30 },
+    { type: 'partner' },
+    { k: 'transition', type: 'transition' },
+    { k: 'pause', label: 'Pause', type: 'time', step: 5, min: 5, max: 300, when: (c) => c.transition !== 'wait' },
+  ],
   ablauf: [
     { type: 'ablauf' },
     { k: 'partners', label: 'Runden', type: 'rounds', min: 1, max: 30 },
@@ -801,19 +832,19 @@ function renderSetup() {
   const html = FIELDS[config.mode].filter((f) => !f.when || f.when(config)).map((f) => {
     if (f.type === 'ablauf') {
       const c = config;
-      const info = (c.sections.length > 1 && c.gap ? 'Pause zwischen Abschnitten ' + fmt(c.gap) + ' · ' : '') +
+      const info = (c.sections.length > 1 && c.gap ? 'Pause zwischen Formen ' + fmt(c.gap) + ' · ' : '') +
         (c.roles !== 'mutual' ? 'Rollenwechsel ' + fmt(c.swapPause) : c.signal ? 'Wechselsignal alle ' + fmt(c.signal) : 'ohne Wechselsignal');
       // Zeiten direkt hier einstellbar; „Bearbeiten“ nur für den Aufbau
-      // Aufbau: Name und Rollen oben, Zeiten in der Mitte, „Ablauf bearbeiten“ als eigene Zeile unten
+      // Aufbau: Name und Rollen oben, Zeiten in der Mitte, „Serie bearbeiten“ als eigene Zeile unten
       return '<div class="ablauf-card"><div class="ablauf-head"><span><b>' + esc(c.name) + '</b><small class="muted">' +
         ROLES.find((r) => r[0] === c.roles)[1] + '</small></span></div>' +
-        c.sections.map((x, i) => '<div class="field"><span class="lbl">' + esc(x.name) + (c.roles !== 'mutual' ? '<small>je Partner</small>' : '') + '</span><span class="stepper">' +
+        c.sections.map((x, i) => '<div class="field"><span class="lbl">' + esc(x.name) + (c.roles !== 'mutual' ? '<small>je Durchgang</small>' : '') + '</span><span class="stepper">' +
           '<button type="button" data-qsec="' + i + '" data-d="-1" aria-label="' + esc(x.name) + ' kürzer">−</button><output>' + fmt(x.dur) + '</output>' +
           '<button type="button" data-qsec="' + i + '" data-d="1" aria-label="' + esc(x.name) + ' länger">+</button></span></div>').join('') +
         '<small class="muted">' + info + '</small>' +
         '<button type="button" class="edit-row" data-edit="1">' +
         '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z M14 6l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>' +
-        'Ablauf bearbeiten<small>Abschnitte, Tori/Uke, Pausen</small></button></div>';
+        'Serie bearbeiten<small>Formen, Tori/Uke, Pausen</small></button></div>';
     }
     if (f.type === 'rounds') {
       const rm = config.roundsMode || 'count';
@@ -863,7 +894,7 @@ function renderSetup() {
   $('btnSavePreset').classList.toggle('attention', editedSinceSave);
 
   const all_presets = BUILTIN.concat(customPresets);
-  $('presetList').innerHTML = '<button type="button" class="preset preset-new" data-newpreset="1"><b>+ Neu</b><span>Randori, Geiko-Ablauf oder Zirkel</span></button>' +
+  $('presetList').innerHTML = '<button type="button" class="preset preset-new" data-newpreset="1"><b>+ Neu</b><span>Randori, Kakari, Serie oder Zirkel</span></button>' +
     all_presets.map((p) => {
     const custom = !BUILTIN.includes(p);
     return '<button type="button" class="preset" data-preset="' + esc(p.id) + '" aria-pressed="' + (p.id === selectedPresetId) + '">' +
@@ -883,7 +914,7 @@ function saveConfig() {
 // Kurzinfo über dem Start-Knopf
 function summaryText(c) {
   const one = Object.assign(clone(c), { roundsMode: 'count' });
-  if (c.mode === 'ablauf') one.partners = 1; else one.rounds = 1;
+  if (c.mode === 'ablauf' || c.mode === 'kakari') one.partners = 1; else one.rounds = 1;
   const roundSegs = buildSegments(one).filter((s) => s.type !== 'prep');
   const perRound = roundSegs.filter((s) => s.type === 'work').reduce((a, s) => a + s.dur, 0);
   if (c.roundsMode === 'open') return 'Runden offen · je Runde ' + fmt(perRound) + ' Kampf-/Übungszeit';
@@ -967,7 +998,7 @@ function closeNewDialog() { $('newDialog').hidden = true; }
 $('newCancel').addEventListener('click', closeNewDialog);
 $('newDialog').addEventListener('click', (e) => { if (e.target === $('newDialog')) closeNewDialog(); });
 
-// Geiko öffnet einen leeren Ablauf, Randori und Zirkel beginnen mit Standardwerten ohne Bezug zu einer Vorlage
+// Serie öffnet eine leere Serie, die anderen Modi beginnen mit Standardwerten ohne Bezug zu einer Vorlage
 function newPreset(mode) {
   if (mode === 'ablauf') {
     if (config.mode !== 'ablauf') config = normalize(MODE_DEFAULTS.ablauf);
@@ -1009,21 +1040,21 @@ function edStepper(key, label, val, sub) {
 function renderEditor() {
   const d = draft;
   if (document.activeElement !== $('edName')) $('edName').value = d.name;
-  $('edTitle').textContent = draftIsNew ? 'Neuer Ablauf' : 'Ablauf bearbeiten';
+  $('edTitle').textContent = draftIsNew ? 'Neue Serie' : 'Serie bearbeiten';
   $('edDone').disabled = !d.sections.length;
   $('edEmpty').hidden = !!d.sections.length;
   $('edRoles').innerHTML = ROLES.map(([v, t]) => '<button type="button" role="radio" data-roles="' + v + '" aria-checked="' + (d.roles === v) + '">' + t + '</button>').join('');
   $('edRolesHint').textContent = {
-    ab: 'Erst übt Partner A den ganzen Ablauf, dann Partner B.',
-    section: 'Jeder Abschnitt erst für Partner A, dann für Partner B.',
-    mutual: 'Jeder Abschnitt läuft einmal, die Paare wechseln sich selbst ab.',
+    ab: 'Erst ist Partner A in der ganzen Serie Tori, dann Partner B.',
+    section: 'Jede Form erst mit Partner A als Tori, dann mit Partner B.',
+    mutual: 'Jede Form läuft einmal, die Paare wechseln sich selbst ab.',
   }[d.roles];
   const prev = roundPreview(d);
   $('edPreview').innerHTML = prev.map((p, i) => {
     const sep = i && d.roles !== 'mutual' && p[0] !== prev[i - 1][0] ? '<span class="muted">⇄</span>' : '';
     return sep + '<span class="sec-pill' + (p.startsWith('A ') ? ' a' : '') + '">' + esc(p) + '</span>';
   }).join('');
-  let times = edStepper('gap', 'Pause zwischen Abschnitten', d.gap);
+  let times = edStepper('gap', 'Pause zwischen Formen', d.gap);
   if (d.roles === 'mutual') {
     times += '<div class="field-col"><span class="lbl">Wechselsignal<small>kurzer Ton als Erinnerung zum Tauschen</small></span><div class="seg" role="radiogroup" aria-label="Wechselsignal">' +
       SIGNALS.map(([v, t]) => '<button type="button" role="radio" data-signal="' + v + '" aria-checked="' + (d.signal === v) + '">' + t + '</button>').join('') + '</div></div>';
