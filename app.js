@@ -1,7 +1,7 @@
 'use strict';
 
 // Bei jeder Änderung erhöhen (und CACHE in sw.js gleich setzen)
-const APP_VERSION = '66';
+const APP_VERSION = '67';
 
 /* ================= Vorlagen & Speicher ================= */
 
@@ -1049,7 +1049,7 @@ function renderEditor() {
   $('edRolesHint').textContent = {
     ab: 'Partner A ist die ganze Serie über Tori, danach Partner B.',
     section: 'Jeder Abschnitt erst mit Partner A als Tori, dann mit Partner B.',
-    mutual: 'Jeder Abschnitt läuft einmal, die Paare wechseln sich selbst ab.',
+    mutual: 'Jeder Abschnitt kommt einmal dran, die Paare wechseln sich dabei selbst ab.',
   }[d.roles];
   const prev = roundPreview(d);
   $('edPreview').innerHTML = prev.map((p, i) => {
