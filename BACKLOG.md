@@ -199,3 +199,8 @@ Offen:
 - Handy-Ansicht oben/unten etwas eng (Feinschliff, niedrige Priorität).
 - Form/Inhalt-Kombination („Randori · Ne-waza“) vorerst nicht nötig; Kumi-kata/Tachi-waza als Chips bei Bedarf.
 - Später: 3er-Rotation, README/Tests im Repo, Kontaktadresse unter „Über die App“, kurze Hilfe beim ersten Start.
+
+### Für den nächsten Durchlauf (gesammelt 06.11.2026)
+- Pausen und Rollenwechsel im Serie-Editor: Bei „Aus“ ebenfalls eine kurze Zeile darunter, was passiert
+  (z. B. „Der nächste Abschnitt beginnt sofort.“ bzw. „Partner B ist sofort Tori, es ertönt nur das Wechselsignal.“),
+  so wie bei „Warten“.
